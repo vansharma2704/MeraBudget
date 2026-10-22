@@ -43,8 +43,18 @@ const clerk = clerkMiddleware(async (auth, req) => {
   return NextResponse.next();
 });
 
-// Arcjet calls its remote API on every request; skip it locally where it only runs in DRY_RUN anyway
-export const proxy = process.env.NODE_ENV === 'production' ? createMiddleware(aj, clerk) : clerk;
+const protectedProxy = createMiddleware(aj, clerk);
+
+// Clerk's sign-in/sign-up pages and callbacks must remain publicly reachable.
+// Running Arcjet Shield/Bot detection in front of them can reject Clerk's
+// redirect query parameters with a 403 before Clerk can complete authentication.
+export const proxy = (req, event) => {
+  if (isPublicRoute(req) || process.env.NODE_ENV !== 'production') {
+    return clerk(req, event);
+  }
+
+  return protectedProxy(req, event);
+};
 export default proxy;
 
 export const config = {
@@ -54,4 +64,4 @@ export const config = {
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],
-};
+};
