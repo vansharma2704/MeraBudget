@@ -2,8 +2,8 @@
 import Link from "next/link";
 import React, { useEffect, useRef } from "react";
 import DashboardPreview from "@/components/dashboard-preview";
-import { statsData } from "@/data/landing";
-import { ArrowRight, Sparkles, Shield, CheckCircle, Star } from "lucide-react";
+import { featureHighlights } from "@/data/landing";
+import { ArrowRight, Sparkles, Shield, CheckCircle, Smartphone } from "lucide-react";
 
 const HeroSection = () => {
   const imageRef = useRef(null);
@@ -87,7 +87,7 @@ const HeroSection = () => {
               {[
                 { icon: CheckCircle, text: "Free forever" },
                 { icon: Shield, text: "Bank-grade encryption" },
-                { icon: Star, text: "4.9 from 2,400+ reviews" },
+                { icon: Smartphone, text: "Works on every device" },
               ].map(({ icon: Icon, text }) => (
                 <span key={text} className="inline-flex items-center gap-1.5">
                   <Icon size={14} className="text-gold-400 shrink-0" />
@@ -130,12 +130,15 @@ const HeroSection = () => {
 
         </div>
 
-        {/* ── Stats ── */}
+        {/* ── Product highlights ── */}
         <dl className="mt-20 pt-10 border-t border-white/[0.08] grid grid-cols-2 md:grid-cols-4 gap-y-8">
-          {statsData.map(({ value: v, label: l }) => (
-            <div key={l} className="text-center lg:text-left">
-              <dt className="text-white font-bold text-3xl tracking-tight">{v}</dt>
-              <dd className="text-white/50 text-sm mt-1">{l}</dd>
+          {featureHighlights.map(({ icon: Icon, title, description }) => (
+            <div key={title} className="text-center lg:text-left">
+              <dt className="text-white font-bold text-3xl tracking-tight flex items-center justify-center lg:justify-start gap-2">
+                <Icon size={24} className="text-gold-400 shrink-0" />
+                <span className="text-base">{title}</span>
+              </dt>
+              <dd className="text-white/50 text-sm mt-1">{description}</dd>
             </div>
           ))}
         </dl>

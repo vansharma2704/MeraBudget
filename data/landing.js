@@ -5,14 +5,17 @@ import {
   Bell,
   Mail,
   ShieldCheck,
+  ArrowUpDown,
+  WalletCards,
+  Smartphone,
 } from "lucide-react";
 
-// Stats strip (shown once, below the hero)
-export const statsData = [
-  { value: "50K+", label: "Active users" },
-  { value: "₹10Cr+", label: "Tracked monthly" },
-  { value: "4.9★", label: "Average rating" },
-  { value: "99.9%", label: "Uptime" },
+// Product highlights (shown once, below the hero)
+export const featureHighlights = [
+  { icon: ArrowUpDown, title: "Income & Expenses", description: "Track every rupee in one place." },
+  { icon: WalletCards, title: "Budget Planning", description: "Build budgets that fit your goals." },
+  { icon: BarChart3, title: "Spending Insights", description: "Understand where your money goes." },
+  { icon: Smartphone, title: "Responsive Design", description: "Manage money on any device." },
 ];
 
 // Everything else, as a compact list
