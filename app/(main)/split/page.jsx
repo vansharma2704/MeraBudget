@@ -51,7 +51,7 @@ export default function SplitGroupsPage() {
   const owe = (groups || []).reduce((a, g) => a + Math.max(0, -g.yourBalance), 0);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 mt-16 pb-20 space-y-8 page-fade-in">
+    <div className="max-w-5xl mx-auto px-4 py-8 pb-20 space-y-8 page-fade-in">
       <div>
         <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">Split</h1>
         <p className="text-white/50 mt-1">Groups for trips, flatmates and friends — see who owes whom.</p>
@@ -83,7 +83,7 @@ export default function SplitGroupsPage() {
           ) : (
             groups.map((g) => (
               <Link key={g.id} href={`/split/${g.id}`}
-                className="flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5 hover:border-gold-400/30 transition-colors">
+                className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-4 hover:border-gold-400/30 transition-colors sm:flex-nowrap sm:gap-4 sm:p-5">
                 <span className="w-11 h-11 rounded-xl bg-gold-500/10 border border-gold-400/20 flex items-center justify-center shrink-0">
                   <Users2 size={18} className="text-gold-300" />
                 </span>
@@ -91,7 +91,7 @@ export default function SplitGroupsPage() {
                   <p className="text-white font-semibold truncate">{g.name}</p>
                   <p className="text-white/40 text-xs truncate">{g.members.map((m) => m.name).join(", ")}</p>
                 </div>
-                <div className="text-right">
+                <div className="ml-auto text-right">
                   <p className={`text-sm font-semibold tabular-nums ${balanceTone(g.yourBalance)}`}>
                     {g.yourBalance > 0.004 ? `you get ${inr(g.yourBalance)}` : g.yourBalance < -0.004 ? `you owe ${inr(-g.yourBalance)}` : "settled up"}
                   </p>

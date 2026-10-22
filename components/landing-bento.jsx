@@ -54,21 +54,28 @@ function ReceiptVisual() {
   );
 }
 
-function GeofenceVisual() {
+function StatementVisual() {
+  const rows = [
+    { label: "Salary", amount: "+₹40,000", income: true },
+    { label: "Groceries", amount: "−₹1,250" },
+    { label: "Electricity", amount: "−₹1,800" },
+  ];
+
   return (
-    <div className="relative -m-5 h-48">
-      <svg viewBox="0 0 300 192" className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-        <g stroke="rgba(255,255,255,0.06)" strokeWidth="8" fill="none">
-          <path d="M-10 50 L310 80" /><path d="M-10 150 L310 130" /><path d="M90 -10 L110 200" /><path d="M220 -10 L200 200" />
-        </g>
-        <circle cx="210" cy="75" r="42" fill="rgba(233,196,106,0.08)" stroke="rgba(233,196,106,0.5)" strokeDasharray="4 4" />
-        <circle cx="210" cy="75" r="5" fill="#e9c46a" />
-        <circle cx="140" cy="110" r="12" fill="rgba(255,255,255,0.08)" />
-        <circle cx="140" cy="110" r="5" fill="#ffffff" stroke="#161b25" strokeWidth="2" />
-      </svg>
-      <div className="absolute left-4 right-4 bottom-4 rounded-xl bg-[#232a38]/95 border border-white/10 px-3.5 py-2.5">
-        <p className="text-xs text-white/75">Near Phoenix Mall · <span className="text-white font-semibold">₹1,800</span> left in Shopping</p>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between text-xs">
+        <span className="text-white/70 font-medium">Bank-statement.pdf</span>
+        <span className="inline-flex items-center gap-1 text-green-400"><Check size={12} /> Ready</span>
       </div>
+      <div className="space-y-1.5">
+        {rows.map((row) => (
+          <div key={row.label} className="flex items-center justify-between rounded-lg bg-white/[0.04] px-3 py-2 text-xs">
+            <span className="text-white/65">{row.label}</span>
+            <span className={row.income ? "text-green-400 font-semibold" : "text-white font-semibold"}>{row.amount}</span>
+          </div>
+        ))}
+      </div>
+      <p className="text-[11px] text-gold-300">Automatically categorised for review</p>
     </div>
   );
 }
@@ -159,7 +166,7 @@ function SplitVisual() {
 
 const FEATURES = [
   { eyebrow: "AI receipt scanner", title: "Snap a bill, skip the typing.", description: "Photograph any receipt and every item is added for you.", Visual: ReceiptVisual },
-  { eyebrow: "Smart geofencing", title: "A nudge before you overspend.", description: "Get alerted near places where your budget usually breaks.", Visual: GeofenceVisual },
+  { eyebrow: "PDF statement import", title: "Bring in your banking history.", description: "Upload a statement, review the categories and import in one go.", Visual: StatementVisual },
   { eyebrow: "Salary planner", title: "Your salary, planned in one tap.", description: "Split every payday into needs, wants and savings.", Visual: SalaryVisual },
   { eyebrow: "Mood tracker", title: "Know why you overspend.", description: "See how stress and mood change what you buy.", Visual: MoodVisual },
   { eyebrow: "Streaks & levels", title: "Habits that actually stick.", description: "Daily streaks and achievements keep you motivated.", Visual: StreakVisual },

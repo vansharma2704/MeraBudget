@@ -9,43 +9,46 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 model User {
-  id            String          @id @default(uuid())
-  clerkUserid   String          @unique
-  email         String          @unique
-  name          String?
-  imageUrl      String?
-  transactions  Transaction[]
-  accounts      Account[]
-  budgets       Budget[]
-  goals         SavingsGoal[]
-  bills         BillReminder[]
-  subscriptions Subscription[]
-  splits        SplitExpense[]
-  splitGroups   SplitGroup[]
-  achievements  Achievement[]
-  streak        UserStreak?
-  preferences   UserPreferences?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  id             String                 @id @default(uuid())
+  clerkUserid    String                 @unique
+  email          String                 @unique
+  name           String?
+  imageUrl       String?
+  transactions   Transaction[]
+  accounts       Account[]
+  budgets        Budget[]
+  goals          SavingsGoal[]
+  bills          BillReminder[]
+  subscriptions  Subscription[]
+  splits         SplitExpense[]
+  splitGroups    SplitGroup[]
+  achievements   Achievement[]
+  streak         UserStreak?
+  preferences    UserPreferences?
+  insightReports AiInsightReport[]
+  reminderEmails PaymentReminderEmail[]
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
 
   @@map("users")
 }
 
 model Account {
-  id           String        @id @default(uuid())
+  id           String         @id @default(uuid())
   name         String
   type         AccountType
-  balance      Decimal       @default(0)
-  isDefault    Boolean       @default(false)
+  balance      Decimal        @default(0)
+  isDefault    Boolean        @default(false)
   userId       String
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  bills        BillReminder[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   @@index([userId])
   @@map("accounts")
@@ -57,25 +60,26 @@ enum AccountType {
 }
 
 model Transaction {
-  id                String            @id @default(uuid())
+  id                String             @id @default(uuid())
   type              TransactionType
   amount            Decimal
   description       String?
   date              DateTime
   category          String
   receiptUrl        String?
-  keywords          String[]          @default([]) // e.g. ["upi", "swiggy", "food delivery"]
-  isRecurring       Boolean           @default(false)
+  keywords          String[]           @default([]) // e.g. ["upi", "swiggy", "food delivery"]
+  isRecurring       Boolean            @default(false)
   recurringInterval RecurringInterval?
   nextRecurringDate DateTime?
   lastProcessed     DateTime?
-  status            TransactionStatus @default(COMPLETED)
+  status            TransactionStatus  @default(COMPLETED)
   userId            String
-  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   accountId         String
-  account           Account           @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  account           Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  bill              BillReminder?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   @@index([userId])
   @@index([accountId])
@@ -115,59 +119,97 @@ model Budget {
 }
 
 model SavingsGoal {
-  id                  String   @id @default(uuid())
+  id                  String    @id @default(uuid())
   name                String
   targetAmount        Decimal
-  currentAmount       Decimal  @default(0)
+  currentAmount       Decimal   @default(0)
   monthlyContribution Decimal?
   icon                String?
   deadline            DateTime?
   userId              String
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   @@index([userId])
   @@map("savings_goals")
 }
 
 model BillReminder {
-  id        String            @id @default(uuid())
-  name      String
-  amount    Decimal
-  dueDate   DateTime
-  frequency RecurringInterval
-  status    String            @default("PENDING") // PENDING, PAID
-  userId    String
-  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  id            String            @id @default(uuid())
+  name          String
+  amount        Decimal
+  dueDate       DateTime
+  frequency     RecurringInterval
+  status        String            @default("PENDING") // PENDING, PAID
+  paidAt        DateTime?
+  category      String?
+  accountId     String?
+  account       Account?          @relation(fields: [accountId], references: [id], onDelete: SetNull)
+  transactionId String?           @unique
+  transaction   Transaction?      @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
   @@index([userId])
+  @@index([accountId])
   @@map("bill_reminders")
 }
 
 model Subscription {
-  id           String            @id @default(uuid())
-  name         String
-  amount       Decimal
-  frequency    RecurringInterval @default(MONTHLY)
-  category     String?
-  nextBilling  DateTime
-  userId       String
-  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  id          String            @id @default(uuid())
+  name        String
+  amount      Decimal
+  frequency   RecurringInterval @default(MONTHLY)
+  category    String?
+  nextBilling DateTime
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
   @@index([userId])
   @@map("subscriptions")
+}
+
+model AiInsightReport {
+  id               String   @id @default(uuid())
+  report           Json
+  source           String
+  model            String?
+  transactionCount Int      @default(0)
+  periodStart      DateTime
+  periodEnd        DateTime
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("ai_insight_reports")
+}
+
+model PaymentReminderEmail {
+  id             String   @id @default(uuid())
+  kind           String
+  referenceId    String
+  occurrenceDate DateTime
+  daysBefore     Int
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sentAt         DateTime @default(now())
+
+  @@unique([kind, referenceId, occurrenceDate, daysBefore])
+  @@index([userId, sentAt])
+  @@map("payment_reminder_emails")
 }
 
 model SplitExpense {
   id           String   @id @default(uuid())
   description  String
   totalAmount  Decimal
-  participants Json     // Array of { name: string, share: number }
+  participants Json // Array of { name: string, share: number }
   userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt    DateTime @default(now())
@@ -178,14 +220,14 @@ model SplitExpense {
 }
 
 model Achievement {
-  id           String   @id @default(uuid())
-  type         String   // e.g., "DISCIPLINED_SPENDER", "SAVINGS_MASTER"
-  name         String
-  description  String
-  icon         String?
-  unlockedAt   DateTime @default(now())
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(uuid())
+  type        String // e.g., "DISCIPLINED_SPENDER", "SAVINGS_MASTER"
+  name        String
+  description String
+  icon        String?
+  unlockedAt  DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("achievements")
@@ -207,14 +249,13 @@ model UserPreferences {
   userId            String   @unique
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   monthlyIncome     Decimal?
-  budgetAllocations Json?    // Object of { category: percentage }
+  budgetAllocations Json? // Object of { category: percentage }
   theme             String   @default("dark")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   @@map("user_preferences")
 }
-
 
 // ── Splitwise-style groups ──
 // Members are plain names owned by the user (they don't need accounts). Amounts are rupees.
@@ -253,7 +294,7 @@ model GroupExpense {
   description String
   amount      Decimal
   splitMode   String      @default("equal") // equal | amount | percent | shares
-  shares      Json        // [{ memberId, amount }] — amounts add up to `amount`
+  shares      Json // [{ memberId, amount }] — amounts add up to `amount`
   date        DateTime    @default(now())
   paidById    String
   paidBy      GroupMember @relation(fields: [paidById], references: [id], onDelete: NoAction)

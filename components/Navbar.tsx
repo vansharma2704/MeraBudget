@@ -13,7 +13,6 @@ import {
   Search,
   Menu,
   Sparkles,
-  Repeat,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import SearchModal from "./search-modal";
@@ -56,7 +55,6 @@ const Navbar = () => {
     { href: "/bills", label: "Bills", icon: CalendarCheck },
     { href: "/goals", label: "Goals", icon: Target },
     { href: "/split", label: "Split", icon: Users2 },
-    { href: "/subscriptions", label: "Subscriptions", icon: Repeat },
     { href: "/reports", label: "Reports", icon: FileBarChart },
   ];
 

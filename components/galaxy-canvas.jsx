@@ -8,6 +8,7 @@ const GalaxyCanvas = () => {
 
   useEffect(() => {
     if (!mountRef.current) return;
+    const mount = mountRef.current;
 
     // --- Renderer ---
     const renderer = new THREE.WebGLRenderer({
@@ -18,7 +19,7 @@ const GalaxyCanvas = () => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
-    mountRef.current.appendChild(renderer.domElement);
+    mount.appendChild(renderer.domElement);
 
     // --- Scene & Camera ---
     const scene = new THREE.Scene();
@@ -215,8 +216,8 @@ const GalaxyCanvas = () => {
       bgMat.dispose();
       texture.dispose();
       renderer.dispose();
-      if (mountRef.current && renderer.domElement.parentNode === mountRef.current) {
-        mountRef.current.removeChild(renderer.domElement);
+      if (renderer.domElement.parentNode === mount) {
+        mount.removeChild(renderer.domElement);
       }
     };
   }, []);

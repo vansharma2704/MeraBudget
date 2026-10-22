@@ -36,7 +36,7 @@ export default function Home() {
           <SectionHeader
             eyebrow="Built for how India spends"
             title="Not just another expense tracker."
-            subtitle="AI receipt scanning, smart location alerts, salary planning and habits that stick — the things other budget apps forget."
+            subtitle="AI receipt scanning, bank statement imports, salary planning and habits that stick — the things other budget apps forget."
           />
           <LandingBento />
         </div>

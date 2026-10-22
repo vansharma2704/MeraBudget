@@ -46,13 +46,13 @@ export default function GroupPage() {
 
   if (error) {
     return (
-      <div className="max-w-3xl mx-auto px-4 mt-16 text-center text-white/60">
+      <div className="max-w-3xl mx-auto px-4 py-8 text-center text-white/60">
         <p>{error}</p>
         <Link href="/split" className="text-gold-300 underline mt-4 inline-block">Back to groups</Link>
       </div>
     );
   }
-  if (!group) return <div className="max-w-5xl mx-auto px-4 mt-16 text-white/40">Loading group…</div>;
+  if (!group) return <div className="max-w-5xl mx-auto px-4 py-8 text-white/40">Loading group…</div>;
 
   const name = Object.fromEntries(group.members.map((m) => [m.id, m.name]));
   const self = group.members.find((m) => m.isSelf);
@@ -74,7 +74,7 @@ export default function GroupPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 mt-16 pb-20 space-y-6 page-fade-in">
+    <div className="max-w-6xl mx-auto px-4 py-8 pb-20 space-y-6 page-fade-in">
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>

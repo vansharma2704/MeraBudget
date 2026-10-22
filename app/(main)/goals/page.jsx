@@ -37,7 +37,7 @@ function GoalCard({ goal, onUpdate, onDelete }) {
             variant="ghost" 
             size="icon" 
             onClick={() => onDelete(goal.id)} 
-            className="opacity-0 group-hover:opacity-100 text-red-500 hover:bg-red-500/10 transition-all rounded-full h-10 w-10"
+            className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-red-500 hover:bg-red-500/10 transition-all rounded-full h-10 w-10"
           >
             <Trash2 size={20} />
           </Button>
@@ -156,7 +156,7 @@ export default function GoalsPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 mt-16 space-y-12 page-fade-in">
+    <div className="container mx-auto px-4 py-8 space-y-12 page-fade-in">
       <div className="flex flex-col gap-3 text-center md:text-left">
         <h1 className="text-4xl font-black uppercase tracking-tight text-white">Financial Goals</h1>
         <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Set and track your savings goals.</p>

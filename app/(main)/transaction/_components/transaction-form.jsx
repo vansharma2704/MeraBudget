@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 
 
 import React, { useEffect } from 'react'
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { toast } from 'sonner';
 
 const AddTransactionForm = ({
@@ -32,7 +32,7 @@ const AddTransactionForm = ({
 const router = useRouter();
 
 
-const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} =  useForm({
+const {register,setValue,handleSubmit,formState:{errors},control,getValues,reset} =  useForm({
     resolver:zodResolver(transactionSchema),
     defaultValues:
     editMode && initialData
@@ -66,9 +66,10 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
     data: transactionResult,
   } = useFetch(editMode ? updateTransaction:createTransaction);
 
-  const type = watch("type");
-  const isRecurring = watch("isRecurring");
-  const date = watch("date");
+  const type = useWatch({ control, name: "type" });
+  const isRecurring = useWatch({ control, name: "isRecurring" });
+  const date = useWatch({ control, name: "date" });
+  const category = useWatch({ control, name: "category" });
 
   const onSubmit = async (data) => {
     const formData = {
@@ -192,7 +193,7 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
     <label className="text-sm font-medium">Category</label>
     <Select 
       onValueChange={(value) => setValue("category", value)}
-      value={watch("category") || ""}
+      value={category || ""}
     >
   <SelectTrigger className="w-full border-white/10 bg-white/5">
     <SelectValue placeholder="Select Category" />
@@ -322,5 +323,4 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
 };
 
 export default AddTransactionForm;
-
 

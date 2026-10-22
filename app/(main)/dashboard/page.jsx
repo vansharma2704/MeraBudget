@@ -10,7 +10,6 @@ import UpcomingBills from "@/components/upcoming-bills";
 import ReceiptScanner from "@/components/receipt-scanner";
 import Achievements from "./_components/achievements";
 import FutureSimulator from "@/components/future-simulator";
-import Geofencing from "@/components/Geofencing";
 import LifestyleTracker from "./_components/lifestyle-tracker";
 import TaxStrategist from "./_components/tax-strategist";
 import FinancialHeatmap from "@/components/financial-heatmap";
@@ -25,6 +24,7 @@ import { getDbUser } from "@/lib/getDbUser";
 import { processDueRecurring } from "@/lib/recurring-process";
 import CreateAccountCard from "./_components/create-account-card";
 import DashboardTabs, { TABS } from "./_components/dashboard-tabs";
+import AiSavingsCoach from "./_components/ai-savings-coach";
 
 async function DashboardPage({ searchParams }) {
   const { date, tab: tabParam } = (await searchParams) || {};
@@ -123,6 +123,7 @@ async function DashboardPage({ searchParams }) {
       {/* ── INSIGHTS: patterns and habits ── */}
       {tab === "insights" && (
         <div className="space-y-6">
+          <AiSavingsCoach />
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
             <div className="lg:col-span-3">
               <MonthlySummary transactions={allTransactions || []} />
@@ -142,10 +143,9 @@ async function DashboardPage({ searchParams }) {
 
       {/* ── TOOLS: utilities ── */}
       {tab === "tools" && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
           <UpcomingBills />
           <ReceiptScanner />
-          <Geofencing />
         </div>
       )}
     </div>

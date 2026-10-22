@@ -8,6 +8,7 @@ const GalaxyHyperspace = () => {
 
   useEffect(() => {
     if (!mountRef.current) return;
+    const mount = mountRef.current;
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 4000);
@@ -19,7 +20,7 @@ const GalaxyHyperspace = () => {
     
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Capped at 1.5 for performance
-    mountRef.current.appendChild(renderer.domElement);
+    mount.appendChild(renderer.domElement);
 
     // ── OPTIMIZED STARFIELD ──
     const starCount = 2500; // Reduced from 6000
@@ -142,7 +143,7 @@ const GalaxyHyperspace = () => {
       starMaterial.dispose();
       windGeometry.dispose();
       windMaterial.dispose();
-      mountRef.current?.removeChild(renderer.domElement);
+      if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement);
     };
   }, []);
 

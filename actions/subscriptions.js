@@ -30,6 +30,9 @@ export async function createSubscription(data) {
     if (!name) throw new Error("Subscription name is required");
     if (!(amount > 0)) throw new Error("Amount must be more than 0");
     if (Number.isNaN(nextBilling.getTime())) throw new Error("Invalid billing date");
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    if (nextBilling < startOfToday) throw new Error("Billing date cannot be in the past");
     if (!["DAILY", "WEEKLY", "MONTHLY", "YEARLY"].includes(frequency)) throw new Error("Invalid frequency");
 
     const subscription = await db.subscription.create({
@@ -65,7 +68,7 @@ export async function getSubscriptions() {
 
     const subscriptions = await db.subscription.findMany({
       where: { userId: user.id },
-      orderBy: { amount: "desc" },
+      orderBy: { nextBilling: "asc" },
     });
 
     return { success: true, data: subscriptions.map(serializeSubscription) };

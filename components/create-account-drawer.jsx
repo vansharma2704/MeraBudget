@@ -10,7 +10,7 @@ import {
   DrawerTitle, 
   DrawerTrigger 
 } from "./ui/drawer";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { accountSchema } from "@/app/lib/schema";
 import { Input } from "./ui/input";
@@ -30,7 +30,7 @@ const CreateAccountDrawer = ({ children }) => {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
+    control,
     reset,
   } = useForm({
     resolver: zodResolver(accountSchema),
@@ -41,6 +41,8 @@ const CreateAccountDrawer = ({ children }) => {
       isDefault: false,
     },
   });
+  const accountType = useWatch({ control, name: "type" });
+  const isDefault = useWatch({ control, name: "isDefault" });
 
   const {
     data: newAccount,
@@ -100,7 +102,7 @@ const CreateAccountDrawer = ({ children }) => {
               </label>
               <Select
                 onValueChange={(value) => setValue("type", value)}
-                defaultValue={watch("type")}
+                value={accountType}
               >
                 <SelectTrigger id="type" className="w-full h-12 bg-white/5 border-white/10 rounded-xl">
                   <SelectValue placeholder="Select Type" />
@@ -142,7 +144,7 @@ const CreateAccountDrawer = ({ children }) => {
               <Switch
                 id="isDefault"
                 onCheckedChange={(checked) => setValue("isDefault", checked)}
-                checked={watch("isDefault")}
+                checked={isDefault}
                 className="data-[state=unchecked]:bg-white/10 data-[state=checked]:bg-primary"
               />
             </div>

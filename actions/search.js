@@ -133,7 +133,7 @@ export async function searchFinancialData(query) {
         type: "Subscriptions",
         title: sub.name,
         subtitle: `${sub.category || "General"} • ₹${Number(sub.amount).toLocaleString()}`,
-        url: `/subscriptions`,
+        url: `/bills`,
         icon: "RefreshCw",
       })),
     ];

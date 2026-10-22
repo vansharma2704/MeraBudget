@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "email": "email dev",
-    "build": "next build --turbopack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate"
@@ -39,13 +39,13 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.38.0",
-    "inngest": "^4.2.4",
+    "inngest": "^4.25.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^1.8.0",
     "next": "^16.2.4",
     "next-themes": "^0.4.6",
-    "pdfjs-dist": "6.1.200",
+    "pdfjs-dist": "^6.4.299",
     "pg": "^8.13.3",
     "react": "^19.2.5",
     "react-day-picker": "^9.9.0",
@@ -62,7 +62,6 @@
     "unpdf": "1.8.1",
     "uuid": "^13.0.0",
     "vaul": "^1.1.2",
-    "xlsx": "^0.18.5",
     "zod": "^4.1.12"
   },
   "devDependencies": {

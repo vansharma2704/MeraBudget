@@ -3,7 +3,7 @@
 import aj from "@/lib/arcjet";
 import { db } from "@/lib/prisma";
 import { getDbUser } from "@/lib/getDbUser";
-import { firstRecurrence } from "@/lib/recurring";
+import { firstRecurrence, nextOccurrenceAfter } from "@/lib/recurring";
 import { request } from "@arcjet/next";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -210,7 +210,8 @@ export async function updateTransaction(id, data) {
           accountId: targetAccount.id,
           isRecurring: Boolean(data.isRecurring),
           recurringInterval: interval,
-          nextRecurringDate: interval ? firstRecurrence(date, interval) : null,
+          // Never rewind an edited schedule into already-generated history.
+          nextRecurringDate: interval ? nextOccurrenceAfter(date, interval) : null,
         },
       });
 
