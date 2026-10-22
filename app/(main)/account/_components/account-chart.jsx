@@ -85,7 +85,7 @@ export function AccountChart({ transactions }) {
           <SelectTrigger className="w-[140px] bg-white/5 border-white/10 rounded-xl">
             <SelectValue placeholder="Select period" />
           </SelectTrigger>
-          <SelectContent className="bg-[#0a0818] border-white/10">
+          <SelectContent className="bg-[#232a38] border-white/10">
             {Object.entries(DATE_RANGES).map(([key, { label }]) => (
               <SelectItem key={key} value={key}>
                 {label}
@@ -95,7 +95,7 @@ export function AccountChart({ transactions }) {
         </Select>
       </CardHeader>
       <CardContent className="pt-8">
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="text-center p-3 rounded-2xl bg-teal-500/5 border border-teal-500/10 hover:bg-teal-500/10 transition-all duration-300">
             <p className="text-[10px] text-teal-400 font-bold uppercase tracking-widest mb-1">Total Income</p>
             <p className="text-xl font-bold text-white">
@@ -108,7 +108,7 @@ export function AccountChart({ transactions }) {
               ₹{totals.expense.toLocaleString()}
             </p>
           </div>
-          <div className="text-center p-3 rounded-2xl bg-purple-500/5 border border-purple-500/10 hover:bg-purple-500/10 transition-all duration-300">
+          <div className="text-center p-3 rounded-2xl bg-gold-500/5 border border-gold-500/10 hover:bg-gold-500/10 transition-all duration-300">
             <p className="text-[10px] text-primary font-bold uppercase tracking-widest mb-1">Net Flow</p>
             <p
               className={`text-xl font-bold ${
@@ -143,17 +143,17 @@ export function AccountChart({ transactions }) {
                 tickFormatter={(value) => `₹${value}`}
               />
               <Tooltip
-                cursor={{ fill: "rgba(124, 58, 237, 0.05)" }}
+                cursor={{ fill: "rgba(212, 168, 67, 0.05)" }}
                 formatter={(value) => [`₹${value}`, undefined]}
                 contentStyle={{
-                  backgroundColor: "rgba(5, 5, 7, 0.95)",
-                  border: "1px solid rgba(124, 58, 237, 0.2)",
+                  backgroundColor: "rgba(26, 31, 43, 0.95)",
+                  border: "1px solid rgba(212, 168, 67, 0.2)",
                   borderRadius: "16px",
                   backdropFilter: "blur(8px)",
                   boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
                 }}
                 itemStyle={{ color: "#fff", fontWeight: "bold", fontSize: "12px" }}
-                labelStyle={{ color: "#7C3AED", fontWeight: "black", marginBottom: "4px", fontSize: "10px", textTransform: "uppercase" }}
+                labelStyle={{ color: "#d4a843", fontWeight: "black", marginBottom: "4px", fontSize: "10px", textTransform: "uppercase" }}
               />
               <Legend verticalAlign="top" height={36} iconType="circle" wrapperStyle={{ fontSize: "10px", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "1px" }} />
               <Bar

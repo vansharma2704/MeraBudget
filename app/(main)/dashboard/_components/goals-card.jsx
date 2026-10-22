@@ -27,7 +27,7 @@ const GoalsCard = ({ goals }) => {
 
   return (
     <Link href="/goals" className="h-full">
-      <Card className="glass-card h-full group hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] transition-all">
+      <Card className="glass-card h-full group hover:shadow-[0_0_30px_rgba(233,196,106,0.15)] transition-all">
         <CardContent className="p-6 flex flex-col justify-between h-full">
           <div className="flex justify-between items-start mb-4">
             <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 text-primary">
@@ -52,7 +52,7 @@ const GoalsCard = ({ goals }) => {
             </div>
             <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
               <div 
-                className="h-full bg-primary shadow-[0_0_10px_rgba(124,58,237,0.5)] transition-all duration-500" 
+                className="h-full bg-primary shadow-[0_0_10px_rgba(212,168,67,0.5)] transition-all duration-500" 
                 style={{ width: `${Math.min(progress, 100)}%` }}
               />
             </div>

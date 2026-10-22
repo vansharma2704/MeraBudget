@@ -123,7 +123,7 @@ export default function BillsPage() {
             </div>
           ) : (
             bills.map((bill) => (
-              <Card key={bill.id} className="glass-card shadow-indigo-500/5 group hover:bg-white/[0.03]">
+              <Card key={bill.id} className="glass-card shadow-gold-500/5 group hover:bg-white/[0.03]">
                 <CardContent className="p-8 flex items-center justify-between">
                   <div className="flex items-center gap-6">
                     <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-inner">

@@ -1,119 +1,169 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Users2, Plus, Trash2, IndianRupee } from "lucide-react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { format } from "date-fns";
+import { Plus, Users2, X, ChevronRight, Trash2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { getGroups, createGroup } from "@/actions/split-groups";
+import { getSplitExpenses, deleteSplitExpense } from "@/actions/split-expense";
+import { inr, balanceTone } from "./_components/format";
 
-export default function SplitPage() {
-  const [description, setDescription] = useState("");
-  const [total, setTotal] = useState("");
-  const [people, setPeople] = useState([{ name: "You", share: 0 }, { name: "", share: 0 }]);
+export default function SplitGroupsPage() {
+  const router = useRouter();
+  const [groups, setGroups] = useState(null);
+  const [legacy, setLegacy] = useState([]);
+  const [name, setName] = useState("");
+  const [person, setPerson] = useState("");
+  const [people, setPeople] = useState([]);
+  const [creating, setCreating] = useState(false);
+
+  useEffect(() => {
+    getGroups().then((r) => setGroups(r.success ? r.data : []));
+    getSplitExpenses().then((r) => r.success && setLegacy(r.data));
+  }, []);
 
   const addPerson = () => {
-    setPeople([...people, { name: "", share: 0 }]);
-  };
-
-  const removePerson = (index) => {
-    if (people.length <= 2) return;
-    const newPeople = [...people];
-    newPeople.splice(index, 1);
-    setPeople(newPeople);
-  };
-
-  const updateName = (index, name) => {
-    const newPeople = [...people];
-    newPeople[index].name = name;
-    setPeople(newPeople);
-  };
-
-  const calculateSplit = () => {
-    if (!total || isNaN(parseFloat(total))) {
-      toast.error("Please enter a valid total amount");
+    const n = person.trim();
+    if (!n) return;
+    if (n.toLowerCase() === "you" || people.some((p) => p.toLowerCase() === n.toLowerCase())) {
+      toast.error(`${n} is already added`);
       return;
     }
-    const share = parseFloat(total) / people.length;
-    const newPeople = people.map(p => ({ ...p, share }));
-    setPeople(newPeople);
+    setPeople([...people, n]);
+    setPerson("");
   };
 
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    setCreating(true);
+    const r = await createGroup({ name, members: people });
+    setCreating(false);
+    if (!r.success) return toast.error(r.error);
+    toast.success("Group created");
+    router.push(`/split/${r.data.id}`);
+  };
+
+  const owed = (groups || []).reduce((a, g) => a + Math.max(0, g.yourBalance), 0);
+  const owe = (groups || []).reduce((a, g) => a + Math.max(0, -g.yourBalance), 0);
+
   return (
-    <div className="container mx-auto px-4 py-8 mt-16 space-y-12 page-fade-in">
-      <div className="flex flex-col gap-3">
-        <h1 className="text-4xl font-black uppercase tracking-[0.2em] text-white glow-text">Split Expense</h1>
-        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Split bills and expenses equally among participants.</p>
+    <div className="max-w-5xl mx-auto px-4 mt-16 pb-20 space-y-8 page-fade-in">
+      <div>
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">Split</h1>
+        <p className="text-white/50 mt-1">Groups for trips, flatmates and friends — see who owes whom.</p>
       </div>
 
-      <div className="max-w-3xl mx-auto">
-        <Card className="glass-card shadow-primary/5">
-          <CardHeader className="standard-header">
-            <span className="text-primary uppercase tracking-widest">Add Expense</span>
-          </CardHeader>
-          <CardContent className="space-y-8 pt-8">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Description</label>
-                <Input 
-                  placeholder="E.G. DINNER, TRIP, GROCERIES" 
-                  value={description} 
-                  onChange={(e) => setDescription(e.target.value)} 
-                  className="bg-white/5 border-white/10 text-white font-bold h-11 rounded-xl focus:ring-primary/50"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Total Amount (₹)</label>
-                <div className="relative">
-                  <Input 
-                    type="number" 
-                    placeholder="0.00" 
-                    value={total} 
-                    onChange={(e) => setTotal(e.target.value)} 
-                    className="bg-white/5 border-white/10 text-white font-bold h-11 rounded-xl pl-8 focus:ring-primary/50"
-                  />
-                  <IndianRupee className="absolute left-3 top-3.5 h-4 w-4 text-primary opacity-50" />
+      {/* Overall position */}
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div className="rounded-2xl border border-green-500/20 bg-green-500/[0.06] p-5">
+          <p className="text-white/55 text-sm">You are owed</p>
+          <p className="text-3xl font-bold text-green-400 tracking-tight mt-1 tabular-nums">{inr(owed)}</p>
+        </div>
+        <div className="rounded-2xl border border-orange-400/20 bg-orange-400/[0.06] p-5">
+          <p className="text-white/55 text-sm">You owe</p>
+          <p className="text-3xl font-bold text-orange-300 tracking-tight mt-1 tabular-nums">{inr(owe)}</p>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-[1fr_22rem] gap-6 items-start">
+        {/* Groups */}
+        <section className="space-y-3">
+          <h2 className="text-white font-semibold">Your groups</h2>
+          {groups === null ? (
+            <p className="text-white/40 text-sm">Loading…</p>
+          ) : groups.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-14 rounded-2xl border border-dashed border-white/10 text-white/45">
+              <Users2 className="h-8 w-8 mb-3" />
+              <p className="text-sm">No groups yet — create one to start splitting.</p>
+            </div>
+          ) : (
+            groups.map((g) => (
+              <Link key={g.id} href={`/split/${g.id}`}
+                className="flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5 hover:border-gold-400/30 transition-colors">
+                <span className="w-11 h-11 rounded-xl bg-gold-500/10 border border-gold-400/20 flex items-center justify-center shrink-0">
+                  <Users2 size={18} className="text-gold-300" />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-semibold truncate">{g.name}</p>
+                  <p className="text-white/40 text-xs truncate">{g.members.map((m) => m.name).join(", ")}</p>
                 </div>
-              </div>
-            </div>
+                <div className="text-right">
+                  <p className={`text-sm font-semibold tabular-nums ${balanceTone(g.yourBalance)}`}>
+                    {g.yourBalance > 0.004 ? `you get ${inr(g.yourBalance)}` : g.yourBalance < -0.004 ? `you owe ${inr(-g.yourBalance)}` : "settled up"}
+                  </p>
+                  <p className="text-white/35 text-xs">{inr(g.totalSpent)} spent</p>
+                </div>
+                <ChevronRight size={18} className="text-white/30" />
+              </Link>
+            ))
+          )}
+        </section>
 
-            <div className="space-y-5">
-              <div className="flex justify-between items-center px-1">
-                <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Participants</h3>
-                <Button variant="ghost" size="sm" onClick={addPerson} className="text-[10px] font-black text-slate-400 hover:text-white uppercase tracking-widest transition-colors">
-                  <Plus size={14} className="mr-2" /> Add Person
-                </Button>
-              </div>
-              
-              <div className="space-y-3">
-                {people.map((person, index) => (
-                  <div key={index} className="flex gap-3 animate-in fade-in slide-in-from-left-2 duration-500">
-                    <Input 
-                      placeholder={`PERSON ${index + 1} NAME`} 
-                      value={person.name} 
-                      onChange={(e) => updateName(index, e.target.value)} 
-                      className="bg-white/[0.03] border-white/10 text-white font-bold h-11 rounded-xl focus:ring-primary/50"
-                      disabled={index === 0}
-                    />
-                    <div className="w-40 bg-primary/10 border border-primary/20 rounded-xl flex items-center px-4 text-xs text-white font-black glow-text shadow-inner">
-                      ₹{Number(person.share).toFixed(2)}
-                    </div>
-                    {index > 1 && (
-                      <Button variant="ghost" size="icon" onClick={() => removePerson(index)} className="text-red-500 hover:bg-red-500/10 h-11 w-11 rounded-xl transition-all">
-                        <Trash2 size={18} />
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
+        {/* Create group */}
+        <form onSubmit={handleCreate} className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5 space-y-4">
+          <h2 className="text-white font-semibold">New group</h2>
+          <div className="space-y-1.5">
+            <label htmlFor="g-name" className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">Group name</label>
+            <Input id="g-name" placeholder="e.g. Goa Trip, Flat 302" value={name} onChange={(e) => setName(e.target.value)}
+              className="bg-white/5 border-white/10 text-white h-11 rounded-xl" />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="g-person" className="text-[11px] font-semibold text-white/50 uppercase tracking-wider">People</label>
+            <div className="flex gap-2">
+              <Input id="g-person" placeholder="Add a name" value={person} onChange={(e) => setPerson(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addPerson(); } }}
+                className="bg-white/5 border-white/10 text-white h-10 rounded-xl" />
+              <Button type="button" variant="outline" onClick={addPerson} disabled={!person.trim()} className="h-10 border-white/15">
+                <Plus size={16} />
+              </Button>
             </div>
-
-            <Button onClick={calculateSplit} className="w-full h-14 bg-primary hover:bg-primary/80 text-white font-black uppercase tracking-[0.5em] rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95 text-lg">
-              CALCULATE SPLIT
-            </Button>
-          </CardContent>
-        </Card>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <span className="text-xs px-2.5 py-1 rounded-full bg-gold-500/15 text-gold-200">You</span>
+              {people.map((p) => (
+                <span key={p} className="text-xs pl-2.5 pr-1 py-1 rounded-full bg-white/[0.07] text-white/80 inline-flex items-center gap-1">
+                  {p}
+                  <button type="button" aria-label={`Remove ${p}`} onClick={() => setPeople(people.filter((x) => x !== p))}
+                    className="hover:text-red-400 p-0.5"><X size={12} /></button>
+                </span>
+              ))}
+            </div>
+          </div>
+          <Button type="submit" disabled={creating || !name.trim() || people.length === 0}
+            className="w-full h-11 bg-gold-400 hover:bg-gold-300 text-[#1a1f2b] font-bold rounded-xl disabled:opacity-40">
+            {creating ? "Creating…" : "Create group"}
+          </Button>
+        </form>
       </div>
+
+      {/* One-off splits saved before groups existed */}
+      {legacy.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-white/70 font-semibold text-sm">Earlier splits</h2>
+          {legacy.map((sp) => (
+            <div key={sp.id} className="flex items-center gap-4 rounded-xl border border-white/[0.06] px-4 py-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white truncate">{sp.description}</p>
+                <p className="text-xs text-white/40">
+                  {format(new Date(sp.createdAt), "dd MMM yyyy")} ·{" "}
+                  {(Array.isArray(sp.participants) ? sp.participants : []).map((p) => `${p.name} ${inr(p.share)}`).join(" · ")}
+                </p>
+              </div>
+              <span className="text-sm text-white/70 tabular-nums">{inr(sp.totalAmount)}</span>
+              <button type="button" aria-label="Delete split"
+                onClick={async () => {
+                  const r = await deleteSplitExpense(sp.id);
+                  if (r.success) setLegacy(legacy.filter((x) => x.id !== sp.id));
+                  else toast.error(r.error);
+                }}
+                className="text-white/25 hover:text-red-400 p-1"><Trash2 size={14} /></button>
+            </div>
+          ))}
+        </section>
+      )}
     </div>
   );
 }

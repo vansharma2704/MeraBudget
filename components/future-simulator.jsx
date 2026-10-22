@@ -41,7 +41,7 @@ export default function FutureSimulator() {
   const finalBalance = data[data.length - 1].projection;
 
   return (
-    <Card className="glass-card shadow-indigo-500/10 h-full flex flex-col">
+    <Card className="glass-card shadow-gold-500/10 h-full flex flex-col">
       <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
         <div className="flex items-center gap-2 text-primary">
           <span>MeraBudget Growth Simulator</span>
@@ -103,8 +103,8 @@ export default function FutureSimulator() {
               <AreaChart data={data}>
                 <defs>
                   <linearGradient id="colorProjection" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.6}/>
-                    <stop offset="95%" stopColor="#7C3AED" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#d4a843" stopOpacity={0.6}/>
+                    <stop offset="95%" stopColor="#d4a843" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
@@ -123,25 +123,25 @@ export default function FutureSimulator() {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: "rgba(5, 5, 7, 0.95)", 
-                    border: "1px solid rgba(124, 58, 237, 0.2)", 
+                    backgroundColor: "rgba(26, 31, 43, 0.95)", 
+                    border: "1px solid rgba(212, 168, 67, 0.2)", 
                     borderRadius: "16px",
                     backdropFilter: "blur(8px)",
                     boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
                   }}
                   itemStyle={{ color: "#fff", fontWeight: "bold", fontSize: "12px" }}
-                  labelStyle={{ color: "#7C3AED", fontWeight: "black", marginBottom: "4px", fontSize: "10px", textTransform: "uppercase" }}
+                  labelStyle={{ color: "#d4a843", fontWeight: "black", marginBottom: "4px", fontSize: "10px", textTransform: "uppercase" }}
                   formatter={(val) => [`₹${val.toLocaleString()}`, "Capital"]}
                   labelFormatter={(label) => `Timeline: Year ${label}`}
                 />
                 <Area 
                   type="monotone" 
                   dataKey="projection" 
-                  stroke="#7C3AED" 
+                  stroke="#d4a843" 
                   strokeWidth={4}
                   fillOpacity={1} 
                   fill="url(#colorProjection)" 
-                  className="drop-shadow-[0_0_15px_rgba(124,58,237,0.5)]"
+                  className="drop-shadow-[0_0_15px_rgba(212,168,67,0.5)]"
                 />
               </AreaChart>
             </ResponsiveContainer>

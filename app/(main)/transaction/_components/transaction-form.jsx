@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { useFetch } from '@/hooks/use-fetch';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
-import { id } from 'date-fns/locale';
+import ReceiptScanner from '@/components/receipt-scanner';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -26,6 +26,7 @@ const AddTransactionForm = ({
   categories,
   editMode = false,
   initialData = null,
+  prefill = null,
 
 }) =>{
 const router = useRouter();
@@ -49,10 +50,11 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
     }
     : {
       type: "EXPENSE",
-      amount: "",
-      description: "",
+      amount: prefill?.amount ?? "",
+      description: prefill?.description ?? "",
       accountId: accounts.find((ac) => ac.isDefault)?.id,
-      date: new Date(),
+      date: prefill?.date ? new Date(prefill.date) : new Date(),
+      ...(prefill?.category && { category: prefill.category }),
       isRecurring : false,
     },
   });
@@ -75,14 +77,17 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
     };
 
     if(editMode) {
-      transactionFn(id, formData);
+      transactionFn(initialData.id, formData);
     } else{
     transactionFn(formData);
     }
   };
 
  useEffect(() => {
-    console.log("Transaction Result:", transactionResult);
+    if (transactionResult && !transactionResult.success && !transactionLoading) {
+      toast.error(transactionResult.message || transactionResult.error || "Could not save transaction");
+      return;
+    }
     if(transactionResult?.success && !transactionLoading){
       toast.success( editMode
        ? "Transaction Updated Sucessfully" 
@@ -90,10 +95,7 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
       reset();
 
       // This is the correct (and only) place to navigate
-      setTimeout(() => {
-        router.refresh();
-        router.push(`/account/${transactionResult.data.accountId}`);
-      }, 1000);
+      router.push(`/account/${transactionResult.data.accountId}`);
 
 
     }
@@ -103,19 +105,31 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
     (category) => category.type === type
   );
 
+  // Fill the form from a scanned receipt (user still reviews before saving)
+  const handleScanComplete = (scanned) => {
+    setValue("type", "EXPENSE");
+    setValue("amount", String(scanned.amount), { shouldValidate: true });
+    if (scanned.date) {
+      const d = new Date(scanned.date);
+      if (d <= new Date()) setValue("date", d);
+    }
+    if (scanned.merchant) setValue("description", scanned.merchant);
+    setValue("category", scanned.category, { shouldValidate: true });
+  };
+
   return (<form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-  {/*AI Recipt Scanner */}
+  {!editMode && <ReceiptScanner compact onScanComplete={handleScanComplete} />}
    
   <div className="space-y-2">
     <label className="text-sm font-medium">Type</label>
     <Select 
       onValueChange={(value) => setValue("type", value)}
-      defaultValue={type}
+      value={type}
     >
   <SelectTrigger className="w-full border-white/10 bg-white/5">
     <SelectValue placeholder="Select Type" />
   </SelectTrigger>
-  <SelectContent className="bg-[#0a0818] border-white/10">
+  <SelectContent className="bg-[#232a38] border-white/10">
     <SelectItem value="EXPENSE">Expense</SelectItem>
     <SelectItem value="INCOME">Income</SelectItem>
   </SelectContent>
@@ -150,7 +164,7 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
   <SelectTrigger className="w-full border-white/10 bg-white/5">
     <SelectValue placeholder="Select Account" />
   </SelectTrigger>
-  <SelectContent className="bg-[#0a0818] border-white/10">
+  <SelectContent className="bg-[#232a38] border-white/10">
     {accounts.map((account) =>(
       <SelectItem key ={account.id} value={account.id}>
         {account.name} (₹{parseFloat(account.balance).toFixed(2)})
@@ -178,12 +192,12 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
     <label className="text-sm font-medium">Category</label>
     <Select 
       onValueChange={(value) => setValue("category", value)}
-      defaultValue={getValues("category")}
+      value={watch("category") || ""}
     >
   <SelectTrigger className="w-full border-white/10 bg-white/5">
     <SelectValue placeholder="Select Category" />
   </SelectTrigger>
-  <SelectContent className="bg-[#0a0818] border-white/10">
+  <SelectContent className="bg-[#232a38] border-white/10">
     {filteredCategories.map((category) =>(
       <SelectItem key ={category.id} value={category.id}>
         {category.name}
@@ -210,7 +224,7 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
     </Button>
     </PopoverTrigger>
-  <PopoverContent className="w-auto p-0 bg-[#0a0818] border-white/10" align="start">
+  <PopoverContent className="w-auto p-0 bg-[#232a38] border-white/10" align="start">
     <div className="scale-100 origin-top-right">
     <Calendar 
     mode="single" 
@@ -266,7 +280,7 @@ const {register,setValue,handleSubmit,formState:{errors},watch,getValues,reset} 
   <SelectTrigger className="w-full border-white/10 bg-white/5">
     <SelectValue placeholder="Select Interval" />
   </SelectTrigger>
-  <SelectContent className="bg-[#0a0818] border-white/10">
+  <SelectContent className="bg-[#232a38] border-white/10">
     <SelectItem value = "DAILY">Daily</SelectItem>
     <SelectItem value = "WEEKLY">Weekly</SelectItem>
     <SelectItem value = "MONTHLY">Monthly</SelectItem>

@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/prisma";
+import { getDbUser } from "@/lib/getDbUser";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
@@ -27,9 +28,20 @@ export async function createGoal(data) {
 
     if (!user) throw new Error("User not found");
 
+    const targetAmount = Number(data.targetAmount);
+    const currentAmount = Number(data.currentAmount) || 0;
+    if (!data.name || !(targetAmount > 0)) throw new Error("Goal name and a positive target are required");
+    if (currentAmount < 0 || currentAmount > targetAmount) {
+      throw new Error("Already saved must be between 0 and the target amount");
+    }
+
     const goal = await db.savingsGoal.create({
       data: {
-        ...data,
+        name: data.name,
+        targetAmount,
+        currentAmount,
+        monthlyContribution: Number(data.monthlyContribution) || 0,
+        icon: data.icon,
         userId: user.id,
       },
     });
@@ -46,12 +58,7 @@ export async function createGoal(data) {
 
 export async function getGoals() {
   try {
-    const { userId: clerkUserId } = await auth();
-    if (!clerkUserId) throw new Error("Unauthorized");
-
-    const user = await db.user.findUnique({
-      where: { clerkUserid: clerkUserId },
-    });
+    const user = await getDbUser();
 
     if (!user) throw new Error("User not found");
 
@@ -73,9 +80,17 @@ export async function updateGoalProgress(id, currentAmount) {
     const { userId: clerkUserId } = await auth();
     if (!clerkUserId) throw new Error("Unauthorized");
 
+    const amount = Number(currentAmount);
+    const existing = await db.savingsGoal.findFirst({
+      where: { id, user: { clerkUserid: clerkUserId } },
+      select: { id: true },
+    });
+    if (!existing) throw new Error("Goal not found");
+    if (!(amount >= 0)) throw new Error("Saved amount can't be negative");
+
     const goal = await db.savingsGoal.update({
       where: { id },
-      data: { currentAmount },
+      data: { currentAmount: amount },
     });
 
     revalidatePath("/dashboard");
@@ -92,9 +107,11 @@ export async function deleteGoal(id) {
     const { userId: clerkUserId } = await auth();
     if (!clerkUserId) throw new Error("Unauthorized");
 
-    await db.savingsGoal.delete({
-      where: { id },
+    // Only the owner's goal can be deleted
+    const { count } = await db.savingsGoal.deleteMany({
+      where: { id, user: { clerkUserid: clerkUserId } },
     });
+    if (count === 0) throw new Error("Goal not found");
 
     revalidatePath("/dashboard");
     revalidatePath("/goals");

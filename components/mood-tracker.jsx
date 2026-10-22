@@ -33,9 +33,9 @@ const MoodTracker = () => {
   if (!isLoaded) return null;
 
   return (
-    <Card className="glass-card h-full border-indigo-500/10">
+    <Card className="glass-card h-full border-gold-500/10">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-black uppercase tracking-widest text-indigo-300">
+        <CardTitle className="text-sm font-black uppercase tracking-widest text-gold-300">
           Daily Mood Tracker
         </CardTitle>
       </CardHeader>
@@ -49,7 +49,7 @@ const MoodTracker = () => {
               onClick={() => handleMoodSelect(mood.key)}
               className={`relative flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 ${
                 selectedMood === mood.key
-                  ? "bg-indigo-500/20 border-indigo-500/50 shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+                  ? "bg-gold-500/20 border-gold-500/50 shadow-[0_0_20px_rgba(233,196,106,0.3)]"
                   : "bg-white/5 border-transparent hover:bg-white/10"
               } border`}
             >
@@ -61,7 +61,7 @@ const MoodTracker = () => {
               {selectedMood === mood.key && (
                 <motion.div
                   layoutId="mood-glow"
-                  className="absolute inset-0 rounded-2xl border border-indigo-400/30 pointer-events-none"
+                  className="absolute inset-0 rounded-2xl border border-gold-400/30 pointer-events-none"
                   initial={false}
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />

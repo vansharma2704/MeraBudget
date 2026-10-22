@@ -11,9 +11,9 @@ const SalaryPlanner = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [categories, setCategories] = useState([
-    { id: 1, label: "Essential Needs", percentage: 50, color: "bg-indigo-500", icon: "Wallet", desc: "Rent, bills, groceries, and debt." },
-    { id: 2, label: "Savings & Investments", percentage: 30, color: "bg-purple-500", icon: "PiggyBank", desc: "Emergency fund, retirement, and stocks." },
-    { id: 3, label: "Wants & Lifestyle", percentage: 20, color: "bg-pink-500", icon: "ShoppingBag", desc: "Dining out, hobbies, and shopping." }
+    { id: 1, label: "Essential Needs", percentage: 50, color: "bg-gold-500", icon: "Wallet", desc: "Rent, bills, groceries, and debt." },
+    { id: 2, label: "Savings & Investments", percentage: 30, color: "bg-sky-400", icon: "PiggyBank", desc: "Emergency fund, retirement, and stocks." },
+    { id: 3, label: "Wants & Lifestyle", percentage: 20, color: "bg-orange-400", icon: "ShoppingBag", desc: "Dining out, hobbies, and shopping." }
   ]);
 
   const [editingId, setEditingId] = useState(null);
@@ -84,10 +84,10 @@ const SalaryPlanner = () => {
   if (!isLoaded) return null;
 
   return (
-    <Card className="glass-card h-full border-purple-500/10">
+    <Card className="glass-card h-full border-gold-500/10">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-sm font-black uppercase tracking-widest text-purple-300 flex items-center gap-2">
+          <CardTitle className="text-sm font-black uppercase tracking-widest text-gold-300 flex items-center gap-2">
             MeraBudget Smart Planner
             <TooltipProvider>
               <Tooltip>
@@ -104,7 +104,7 @@ const SalaryPlanner = () => {
             variant="ghost" 
             size="sm" 
             onClick={() => setIsCustomizing(!isCustomizing)}
-            className={`h-8 px-2 text-[10px] font-bold uppercase tracking-tighter transition-all ${isCustomizing ? "bg-purple-500/20 text-purple-300" : "text-slate-500 hover:text-white"}`}
+            className={`h-8 px-2 text-[10px] font-bold uppercase tracking-tighter transition-all ${isCustomizing ? "bg-gold-500/20 text-gold-300" : "text-slate-500 hover:text-white"}`}
           >
             <Settings2 className="h-3 w-3 mr-1" />
             {isCustomizing ? "Done" : "Customize"}
@@ -118,16 +118,16 @@ const SalaryPlanner = () => {
             placeholder="Enter Monthly Salary"
             value={salary}
             onChange={handleSalaryChange}
-            className="flex h-14 w-full bg-white/5 border-white/10 focus:border-purple-500/50 transition-all text-xl font-bold py-6 pl-10 rounded-2xl outline-none"
+            className="flex h-14 w-full bg-white/5 border-white/10 focus:border-gold-500/50 transition-all text-xl font-bold py-6 pl-10 rounded-2xl outline-none"
           />
-          <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-purple-400 opacity-70" />
+          <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gold-400 opacity-70" />
         </div>
 
         <div className="space-y-4 pt-2">
           {categories.map((item) => (
             <div key={item.id} className="group/item relative space-y-1.5">
               {editingId === item.id ? (
-                <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-purple-500/30">
+                <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-gold-500/30">
                   <input 
                     className="bg-transparent border-b border-white/10 text-[11px] font-bold uppercase text-white outline-none w-full"
                     value={editForm.label}
@@ -149,14 +149,14 @@ const SalaryPlanner = () => {
                 <>
                   <div className="flex justify-between items-center text-[11px] font-bold uppercase tracking-tight">
                     <span className="flex items-center gap-1.5 opacity-80">
-                      <span className="text-purple-400">{getIcon(item.icon)}</span>
+                      <span className="text-gold-400">{getIcon(item.icon)}</span>
                       {item.label} ({item.percentage}%)
                     </span>
                     <div className="flex items-center gap-3">
                       <span className="text-white">₹{((amount * item.percentage) / 100).toLocaleString()}</span>
                       {isCustomizing && (
                         <div className="flex items-center gap-2">
-                          <button onClick={() => startEditing(item)} className="text-slate-500 hover:text-purple-400 transition-colors">
+                          <button onClick={() => startEditing(item)} className="text-slate-500 hover:text-gold-400 transition-colors">
                             <Edit2 size={12} />
                           </button>
                           <button onClick={() => deleteCategory(item.id)} className="text-slate-500 hover:text-red-400 transition-colors">
@@ -168,7 +168,7 @@ const SalaryPlanner = () => {
                   </div>
                   <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
                     <div 
-                      className={`h-full ${item.color} transition-all duration-1000 shadow-[0_0_10px_rgba(168,85,247,0.4)]`}
+                      className={`h-full ${item.color} transition-all duration-1000 shadow-[0_0_10px_rgba(233,196,106,0.4)]`}
                       style={{ width: `${amount > 0 ? item.percentage : 0}%` }}
                     />
                   </div>
@@ -182,7 +182,7 @@ const SalaryPlanner = () => {
               variant="outline" 
               size="default"
               onClick={addCategory}
-              className="w-full border-dashed border-white/10 hover:border-purple-500/50 bg-transparent text-[10px] uppercase font-black tracking-widest text-slate-500 hover:text-white"
+              className="w-full border-dashed border-white/10 hover:border-gold-500/50 bg-transparent text-[10px] uppercase font-black tracking-widest text-slate-500 hover:text-white"
             >
               <Plus className="h-3 w-3 mr-2" />
               Add Category

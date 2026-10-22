@@ -1,154 +1,137 @@
 import HeroSection from "../components/hero";
-import { Button } from "../components/ui/button";
-import { Card, CardContent } from "../components/ui/card";
-import { featuresData, howItWorksData, statsData, testimonialsData } from "../data/landing";
+import LandingBento from "../components/landing-bento";
+import GrowthSimulatorDemo from "../components/growth-simulator-demo";
+import { extrasData, testimonialsData } from "../data/landing";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Star, TrendingUp } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
+/* ── Section header: small gold eyebrow + plain heading ── */
+const SectionHeader = ({ eyebrow, title, subtitle }) => (
+  <div className="max-w-2xl mx-auto text-center mb-12 sm:mb-14">
+    <p className="text-gold-400 text-xs font-bold tracking-[0.2em] uppercase mb-4">{eyebrow}</p>
+    <h2 className="font-bold tracking-tight text-white"
+      style={{ fontSize: "clamp(1.85rem,3.8vw,3rem)", lineHeight: 1.1 }}>
+      {title}
+    </h2>
+    {subtitle && (
+      <p className="text-white/60 text-base sm:text-lg leading-relaxed mt-4">{subtitle}</p>
+    )}
+  </div>
+);
+
+/* ═══════════════════════════════════════ PAGE ═══════════════════════════ */
 export default function Home() {
+  const [featured, ...others] = testimonialsData;
+
   return (
-    <div className="space-y-32 pb-32">
-      {/* Hero Section */}
+    <div className="w-full overflow-x-hidden">
+
+      {/* 1 ── Hero */}
       <HeroSection />
 
-      {/* Stats Section */}
-      <section className="py-20 border-y border-white/5 bg-secondary/30 backdrop-blur-3xl relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5" />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
-            {statsData.map((stat, index) => (
-              <div key={index} className="text-center group">
-                <div className="text-5xl md:text-6xl font-black text-white mb-3 group-hover:scale-110 transition-transform duration-500 drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-                   {stat.value}
+      {/* 2 ── Feature bento */}
+      <section id="features" className="pt-16 pb-24 sm:pt-20 sm:pb-32">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <SectionHeader
+            eyebrow="Built for how India spends"
+            title="Not just another expense tracker."
+            subtitle="AI receipt scanning, smart location alerts, salary planning and habits that stick — the things other budget apps forget."
+          />
+          <LandingBento />
+        </div>
+      </section>
+
+      {/* 3 ── Interactive simulator */}
+      <section className="pb-24 sm:pb-32">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <SectionHeader
+            eyebrow="Try it yourself"
+            title="See what a small habit becomes."
+            subtitle="Drag the sliders. This is the same growth simulator you get inside MeraBudget."
+          />
+          <GrowthSimulatorDemo />
+        </div>
+      </section>
+
+      {/* 4 ── Also included */}
+      <section className="py-16 sm:py-20 bg-white/[0.015] border-y border-white/[0.06]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
+          <p className="text-center text-white/50 text-sm mb-10">Plus everything you&apos;d expect</p>
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-6">
+            {extrasData.map(({ icon: Icon, title, description }) => (
+              <div key={title} className="text-center">
+                <div className="w-11 h-11 mx-auto rounded-xl bg-white/[0.04] border border-white/[0.07]
+                  flex items-center justify-center mb-3">
+                  <Icon size={18} className="text-gold-300" />
                 </div>
-                <div className="text-muted-foreground text-xs uppercase tracking-[0.3em] font-bold">
-                   {stat.label}
-                </div>
+                <p className="text-white font-semibold text-sm">{title}</p>
+                <p className="text-white/50 text-xs mt-1">{description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-32 relative">
-        <div className="container mx-auto px-4">
-          <div className="text-center max-w-4xl mx-auto mb-24 space-y-6">
-            <h2 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-tight">
-              ADVANCED <span className="text-primary glow-text">FINANCIAL ENGINE</span>
-            </h2>
-            <p className="text-muted-foreground text-xl md:text-2xl font-light">
-              Everything you need to master your MeraBudget, powered by intelligent insights and celestial precision.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {featuresData.map((feature, index) => (
-              <Card key={index} className="glass-card group hover:-translate-y-3 transition-all duration-500 border-white/5 hover:border-primary/40 bg-secondary/20">
-                <CardContent className="space-y-8 pt-10 px-8 pb-12">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500 shadow-[0_0_30px_rgba(168,85,247,0.15)] group-hover:shadow-[0_0_40px_rgba(168,85,247,0.4)]">
-                    {feature.icon}
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-3xl font-bold text-white group-hover:text-primary transition-colors tracking-tight">{feature.title}</h3>
-                    <p className="text-muted-foreground text-base leading-relaxed font-light">{feature.description}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="py-32 bg-secondary/20 border-y border-white/5 backdrop-blur-md relative overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 blur-[150px] -z-10 rounded-full" />
-        <div className="container mx-auto px-4">
-          <h2 className="text-5xl md:text-6xl font-black text-center mb-24 text-white tracking-tighter">
-            SIMPLE <span className="text-primary">WORKFLOW</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
-            {howItWorksData.map((step, index) => (
-              <div key={index} className="text-center relative group">
-                <div className="w-24 h-24 bg-white/5 backdrop-blur-2xl rounded-[2rem] flex items-center justify-center mx-auto mb-10 border border-white/10 group-hover:border-primary/50 group-hover:scale-110 transition-all duration-500 shadow-2xl relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  {step.icon}
-                </div>
-                <h3 className="text-3xl font-bold mb-6 text-white tracking-tight">{step.title}</h3>
-                <p className="text-muted-foreground text-base leading-relaxed max-w-[280px] mx-auto font-light">{step.description}</p>
-                {index < 2 && (
-                  <div className="hidden md:block absolute top-12 -right-10 text-white/5 group-hover:text-primary/20 transition-all duration-700 animate-pulse">
-                    <ArrowRight size={48} />
-                  </div>
-                )}
+      {/* 5 ── Testimonials: one featured + two small */}
+      <section className="py-24 sm:py-32">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+          <figure className="text-center max-w-3xl mx-auto">
+            <blockquote className="text-white font-medium tracking-tight leading-snug"
+              style={{ fontSize: "clamp(1.35rem,2.8vw,2rem)" }}>
+              “{featured.quote}”
+            </blockquote>
+            <figcaption className="flex items-center justify-center gap-3 mt-8">
+              <Image src={featured.image} alt={featured.name} width={44} height={44}
+                className="rounded-full ring-2 ring-gold-400/40" />
+              <div className="text-left">
+                <p className="text-white font-semibold text-sm">{featured.name}</p>
+                <p className="text-white/55 text-sm">{featured.role}</p>
               </div>
+            </figcaption>
+          </figure>
+
+          <div className="grid md:grid-cols-2 gap-5 mt-16">
+            {others.map((t) => (
+              <figure key={t.name}
+                className="rounded-2xl bg-white/[0.025] border border-white/[0.07] p-6">
+                <blockquote className="text-white/75 leading-relaxed">“{t.quote}”</blockquote>
+                <figcaption className="flex items-center gap-3 mt-5">
+                  <Image src={t.image} alt={t.name} width={32} height={32} className="rounded-full" />
+                  <p className="text-sm">
+                    <span className="text-white font-semibold">{t.name}</span>
+                    <span className="text-white/55"> · {t.role}</span>
+                  </p>
+                </figcaption>
+              </figure>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-32 relative">
-        <div className="container mx-auto px-4">
-          <h2 className="text-5xl md:text-6xl font-black text-center mb-24 text-white tracking-tighter">
-            TRUSTED BY <span className="text-primary">PROFESSIONALS</span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {testimonialsData.map((testimonial, index) => (
-              <Card key={index} className="glass-card hover:border-primary/30 transition-all duration-500 bg-secondary/10">
-                <CardContent className="pt-10 px-8 pb-10 space-y-8">
-                  <div className="flex items-center gap-5">
-                    <div className="p-1 rounded-full bg-gradient-to-tr from-primary to-violet-500 shadow-lg shadow-primary/20">
-                      <Image
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        width={60}
-                        height={60}
-                        className="rounded-full border border-white/20"
-                      />
-                    </div>
-                    <div>
-                      <div className="font-bold text-white text-xl tracking-tight">{testimonial.name}</div>
-                      <div className="text-xs text-primary uppercase tracking-[0.2em] font-black">{testimonial.role}</div>
-                    </div>
-                  </div>
-                  <div className="flex text-primary/80 gap-1">
-                    {[...Array(5)].map((_, i) => <Star key={i} size={18} fill="currentColor" />)}
-                  </div>
-                  <p className="text-muted-foreground italic text-lg leading-relaxed font-light">"{testimonial.quote}"</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Call to Action Section */}
-      <section className="container mx-auto px-4 py-32">
-        <div className="relative overflow-hidden rounded-[3rem] glass-card p-16 md:p-32 text-center space-y-12 border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.9)] bg-secondary/40">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/20 via-transparent to-violet-600/20 -z-10" />
-          <div className="space-y-6">
-            <h2 className="text-6xl md:text-8xl font-black text-white leading-[0.9] tracking-tighter">
-              READY TO <br /> <span className="text-primary glow-text">EVOLVE?</span>
+      {/* 6 ── Final CTA */}
+      <section className="pb-24 sm:pb-32">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+          <div className="relative overflow-hidden rounded-3xl text-center px-6 sm:px-14 py-16 sm:py-20
+            border border-gold-400/20 bg-gradient-to-b from-gold-500/[0.08] to-white/[0.02]">
+            <h2 className="font-bold tracking-tight text-white mb-4"
+              style={{ fontSize: "clamp(1.9rem,4.5vw,3rem)", lineHeight: 1.1 }}>
+              Your first ₹1 lakh saved<br className="hidden sm:block" /> starts with one tap.
             </h2>
-            <p className="text-muted-foreground text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed font-light tracking-wide">
-              Join the elite users who have mastered their MeraBudget with cosmic intelligence and precision.
+            <p className="text-white/60 text-base sm:text-lg max-w-md mx-auto mb-8">
+              Free forever. No credit card. Set up in minutes.
             </p>
-          </div>
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-            <Link href="/dashboard">
-              <Button size="lg" className="px-16 py-10 text-2xl group">
-                Get Started <ArrowRight className="ml-3 group-hover:translate-x-2 transition-transform" />
-              </Button>
-            </Link>
-            <Link href="#features">
-              <Button variant="outline" size="lg" className="px-16 py-10 text-2xl backdrop-blur-xl">
-                Explore Features
-              </Button>
+            <Link href="/dashboard"
+              className="group inline-flex items-center gap-2.5 px-9 py-3.5 rounded-full
+                font-bold text-[15px] text-[#1a1f2b] bg-gold-400 hover:bg-gold-300
+                shadow-[0_10px_30px_rgba(233,196,106,0.25)] transition-colors">
+              Get started free
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
       </section>
+
     </div>
   );
 }

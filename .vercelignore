@@ -1,0 +1,7 @@
+# Local diagnostics and test fixtures must not be deployed publicly.
+.tmp-dbg/
+app/zz-ocr/
+public/zz-test-statement.pdf
+
+# OCR uses the browser/CDN model; this local training file is unused.
+eng.traineddata

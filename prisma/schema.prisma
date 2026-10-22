@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
 }
 
 model User {
@@ -25,6 +25,7 @@ model User {
   bills         BillReminder[]
   subscriptions Subscription[]
   splits        SplitExpense[]
+  splitGroups   SplitGroup[]
   achievements  Achievement[]
   streak        UserStreak?
   preferences   UserPreferences?
@@ -63,6 +64,7 @@ model Transaction {
   date              DateTime
   category          String
   receiptUrl        String?
+  keywords          String[]          @default([]) // e.g. ["upi", "swiggy", "food delivery"]
   isRecurring       Boolean           @default(false)
   recurringInterval RecurringInterval?
   nextRecurringDate DateTime?
@@ -77,6 +79,7 @@ model Transaction {
 
   @@index([userId])
   @@index([accountId])
+  @@index([userId, date]) // composite for date-range queries on dashboard
   @@map("transactions")
 }
 
@@ -118,6 +121,7 @@ model SavingsGoal {
   currentAmount       Decimal  @default(0)
   monthlyContribution Decimal?
   icon                String?
+  deadline            DateTime?
   userId              String
   user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt           DateTime @default(now())
@@ -209,4 +213,71 @@ model UserPreferences {
   updatedAt         DateTime @updatedAt
 
   @@map("user_preferences")
-}
+}
+
+
+// ── Splitwise-style groups ──
+// Members are plain names owned by the user (they don't need accounts). Amounts are rupees.
+model SplitGroup {
+  id          String            @id @default(uuid())
+  name        String
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  members     GroupMember[]
+  expenses    GroupExpense[]
+  settlements GroupSettlement[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([userId])
+  @@map("split_groups")
+}
+
+model GroupMember {
+  id              String            @id @default(uuid())
+  name            String
+  isSelf          Boolean           @default(false) // the app user ("You")
+  groupId         String
+  group           SplitGroup        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  expensesPaid    GroupExpense[]
+  settlementsSent GroupSettlement[] @relation("SettlementFrom")
+  settlementsGot  GroupSettlement[] @relation("SettlementTo")
+  createdAt       DateTime          @default(now())
+
+  @@index([groupId])
+  @@map("group_members")
+}
+
+model GroupExpense {
+  id          String      @id @default(uuid())
+  description String
+  amount      Decimal
+  splitMode   String      @default("equal") // equal | amount | percent | shares
+  shares      Json        // [{ memberId, amount }] — amounts add up to `amount`
+  date        DateTime    @default(now())
+  paidById    String
+  paidBy      GroupMember @relation(fields: [paidById], references: [id], onDelete: NoAction)
+  groupId     String
+  group       SplitGroup  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdAt   DateTime    @default(now())
+
+  @@index([groupId])
+  @@map("group_expenses")
+}
+
+// A repayment: `from` paid `to` back
+model GroupSettlement {
+  id        String      @id @default(uuid())
+  amount    Decimal
+  date      DateTime    @default(now())
+  fromId    String
+  from      GroupMember @relation("SettlementFrom", fields: [fromId], references: [id], onDelete: NoAction)
+  toId      String
+  to        GroupMember @relation("SettlementTo", fields: [toId], references: [id], onDelete: NoAction)
+  groupId   String
+  group     SplitGroup  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdAt DateTime    @default(now())
+
+  @@index([groupId])
+  @@map("group_settlements")
+}

@@ -10,6 +10,7 @@ const isProtectedRoute = createRouteMatcher([
   '/goals(.*)',
   '/split(.*)',
   '/reports(.*)',
+  '/subscriptions(.*)',
 ]);
 
 const isPublicRoute = createRouteMatcher([
@@ -42,7 +43,8 @@ const clerk = clerkMiddleware(async (auth, req) => {
   return NextResponse.next();
 });
 
-export const proxy = createMiddleware(aj, clerk);
+// Arcjet calls its remote API on every request; skip it locally where it only runs in DRY_RUN anyway
+export const proxy = process.env.NODE_ENV === 'production' ? createMiddleware(aj, clerk) : clerk;
 export default proxy;
 
 export const config = {

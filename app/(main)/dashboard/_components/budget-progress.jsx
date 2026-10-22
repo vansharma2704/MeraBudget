@@ -64,7 +64,7 @@ export function BudgetProgress({ initialBudget, currentExpenses }) {
   }, [error]);
 
   return (
-    <Card className="h-full flex flex-col bg-[#090812] border border-white/5 rounded-xl overflow-hidden relative">
+    <Card className="h-full flex flex-col bg-[#232a38] border border-white/5 rounded-xl overflow-hidden relative">
       <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
         <div className="flex items-center gap-2 text-primary">
           <span>Budget Control</span>

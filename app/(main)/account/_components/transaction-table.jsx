@@ -83,7 +83,8 @@ const TransactionTable = ({ transactions }) => {
   if (searchTerm){
     const searchLower = searchTerm.toLowerCase();
     result = result.filter((transaction) => 
-      transaction.description?.toLowerCase().includes(searchLower)
+      transaction.description?.toLowerCase().includes(searchLower) ||
+      transaction.keywords?.some((k) => k.includes(searchLower))
     );
   }
 
@@ -183,7 +184,7 @@ const handleClearFilters=() => {
   return (
     <div className="space-y-6">
       {deleteLoading && (
-        <BarLoader className="mt-4" width={"100%"} color="#7C3AED" />
+        <BarLoader className="mt-4" width={"100%"} color="#d4a843" />
       )}
 
       {/* Filters */}
@@ -202,7 +203,7 @@ const handleClearFilters=() => {
             <SelectTrigger className="w-[140px] bg-white/5 border-white/10 text-white rounded-xl h-11">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
-            <SelectContent className="bg-[#0a0818] border-white/10">
+            <SelectContent className="bg-[#232a38] border-white/10">
               <SelectItem value="INCOME">Income</SelectItem>
               <SelectItem value="EXPENSE">Expense</SelectItem>
             </SelectContent>
@@ -212,7 +213,7 @@ const handleClearFilters=() => {
             <SelectTrigger className="w-[170px] bg-white/5 border-white/10 text-white rounded-xl h-11">
               <SelectValue placeholder="Frequency" />
             </SelectTrigger>
-            <SelectContent className="bg-[#0a0818] border-white/10">
+            <SelectContent className="bg-[#232a38] border-white/10">
               <SelectItem value="recurring">Recurring</SelectItem>
               <SelectItem value="non-recurring">Non-recurring</SelectItem>
             </SelectContent>
@@ -240,7 +241,7 @@ const handleClearFilters=() => {
       </div>
 
       {/* Transactions */}
-      <div className="glass-card overflow-hidden shadow-2xl border-white/5">
+      <div className="glass-card overflow-x-auto shadow-2xl border-white/5 [&_table]:min-w-[760px]">
         <Table>
           <TableHeader className="bg-white/5">
             <TableRow className="border-white/5 hover:bg-transparent">
@@ -313,6 +314,13 @@ const handleClearFilters=() => {
 
                   <TableCell className="text-sm font-bold text-white group-hover:text-primary transition-colors">
                     {transaction.description || "Unnamed Transaction"}
+                    {transaction.keywords?.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {transaction.keywords.map((k) => (
+                          <span key={k} className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gold-500/10 text-gold-200/90">{k}</span>
+                        ))}
+                      </div>
+                    )}
                   </TableCell>
 
                   <TableCell>
@@ -344,7 +352,7 @@ const handleClearFilters=() => {
                               {RECCURRING_INTERVALS[transaction.recurringInterval]}
                             </Badge>
                           </TooltipTrigger>
-                          <TooltipContent className="bg-[#0a0818] border-white/10">
+                          <TooltipContent className="bg-[#232a38] border-white/10">
                             <div className="space-y-1">
                               <p className="text-[9px] uppercase font-black text-slate-500 tracking-widest">Next Pulse</p>
                               <p className="text-xs font-bold text-white">
@@ -368,7 +376,7 @@ const handleClearFilters=() => {
                           <MoreHorizontal className="h-4 w-4 text-slate-500 group-hover:text-white" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-[#0a0818] border-white/10 translate-x-[-10px]">
+                      <DropdownMenuContent className="bg-[#232a38] border-white/10 translate-x-[-10px]">
                         <DropdownMenuItem className="text-xs font-bold uppercase tracking-widest" onClick={() => router.push(`/transaction/create?edit=${transaction.id}`)}>
                           Edit
                         </DropdownMenuItem>

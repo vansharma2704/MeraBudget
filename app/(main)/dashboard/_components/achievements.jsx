@@ -12,7 +12,7 @@ const iconMap = {
   ShieldCheck: <ShieldCheck className="h-6 w-6 text-teal-400 group-hover:drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]" />,
   Trophy: <Trophy className="h-6 w-6 text-amber-400 group-hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />,
   Zap: <Zap className="h-6 w-6 text-cyan-400 group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]" />,
-  Award: <Award className="h-6 w-6 text-primary group-hover:drop-shadow-[0_0_8px_rgba(124,58,237,0.5)]" />,
+  Award: <Award className="h-6 w-6 text-primary group-hover:drop-shadow-[0_0_8px_rgba(212,168,67,0.5)]" />,
 };
 
 export default function Achievements() {
@@ -27,12 +27,13 @@ export default function Achievements() {
           particleCount: 150,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ["#7C3AED", "#2DD4BF", "#F43F5E"],
+          colors: ["#d4a843", "#2DD4BF", "#F43F5E"],
         });
       }
 
       const gamificationData = await getUserGamificationData();
-      setData(gamificationData);
+      // On failure the action returns { error } only; keep the empty defaults instead of crashing
+      if (!gamificationData?.error) setData(gamificationData);
       setLoading(false);
     }
     init();
@@ -44,7 +45,7 @@ export default function Achievements() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Streak Card */}
-        <Card className="h-full flex flex-col bg-[#090812] border border-white/5 rounded-xl overflow-hidden relative group">
+        <Card className="h-full flex flex-col bg-[#232a38] border border-white/5 rounded-xl overflow-hidden relative group">
           <div className="absolute -top-10 -right-10 opacity-10 group-hover:opacity-20 transition-opacity">
             <Flame className="h-32 w-32 text-orange-500" />
           </div>
@@ -71,7 +72,7 @@ export default function Achievements() {
         </Card>
 
         {/* Level Card */}
-        <Card className="h-full flex flex-col bg-[#090812] border border-white/5 rounded-xl overflow-hidden relative group">
+        <Card className="h-full flex flex-col bg-[#232a38] border border-white/5 rounded-xl overflow-hidden relative group">
           <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
             <div className="flex items-center gap-2 text-primary">
               <Award size={16} />
@@ -90,7 +91,7 @@ export default function Achievements() {
       </div>
 
       {/* Badges Section */}
-      <Card className="h-full flex flex-col bg-[#090812] border border-white/5 rounded-xl overflow-hidden relative">
+      <Card className="h-full flex flex-col bg-[#232a38] border border-white/5 rounded-xl overflow-hidden relative">
         <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
           <div className="flex items-center gap-2 text-primary">
             <Trophy size={16} />
@@ -108,7 +109,7 @@ export default function Achievements() {
                   whileHover={{ scale: 1.05, y: -8 }}
                   className="flex flex-col items-center gap-3 p-4 rounded-3xl bg-white/5 border border-white/10 w-32 text-center group transition-all hover:bg-white/[0.08]"
                 >
-                  <div className="p-3 rounded-2xl bg-black/40 border border-white/5 group-hover:border-primary/50 transition-colors">
+                  <div className="p-3 rounded-2xl bg-[#141924]/40 border border-white/5 group-hover:border-primary/50 transition-colors">
                     {iconMap[achievement.icon] || <Trophy className="h-6 w-6 text-primary" />}
                   </div>
                   <span className="text-[10px] font-black text-white uppercase tracking-tighter line-clamp-2 leading-tight group-hover:text-primary transition-colors">{achievement.name}</span>

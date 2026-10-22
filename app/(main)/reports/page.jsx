@@ -71,7 +71,7 @@ export default function ReportsPage() {
       </div>
 
       <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
-        <Card className="glassmorphism glow-border hover:bg-purple-500/5 transition-all text-center">
+        <Card className="glassmorphism glow-border hover:bg-gold-500/5 transition-all text-center">
           <CardHeader>
             <div className="mx-auto h-16 w-16 bg-red-500/10 rounded-full flex items-center justify-center text-red-400 mb-2">
               <FileDown size={32} />
@@ -86,7 +86,7 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
 
-        <Card className="glassmorphism glow-border hover:bg-purple-500/5 transition-all text-center">
+        <Card className="glassmorphism glow-border hover:bg-gold-500/5 transition-all text-center">
           <CardHeader>
             <div className="mx-auto h-16 w-16 bg-green-500/10 rounded-full flex items-center justify-center text-green-400 mb-2">
               <Table size={32} />
@@ -102,7 +102,7 @@ export default function ReportsPage() {
         </Card>
       </div>
 
-      <Card className="glassmorphism border-purple-500/20">
+      <Card className="glassmorphism border-gold-500/20">
         <CardHeader>
           <CardTitle>Data Preview</CardTitle>
           <CardDescription>Last {transactions.length} transactions included in report.</CardDescription>

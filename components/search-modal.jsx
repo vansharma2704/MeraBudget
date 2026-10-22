@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { 
   Search, 
   X, 
@@ -31,6 +31,20 @@ const SearchModal = ({ isOpen, onClose }) => {
   const debouncedQuery = useDebounce(query, 300);
   const router = useRouter();
   const inputRef = useRef(null);
+
+  const addToRecent = useCallback((search) => {
+    setRecentSearches((current) => {
+      const updated = [search, ...current.filter((item) => item !== search)].slice(0, 5);
+      localStorage.setItem("recentSearches", JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const handleSelect = useCallback((url, title) => {
+    addToRecent(title);
+    onClose();
+    router.push(url);
+  }, [addToRecent, onClose, router]);
 
   const icons = {
     CreditCard: <CreditCard size={20} />,
@@ -89,24 +103,13 @@ const SearchModal = ({ isOpen, onClose }) => {
       window.addEventListener("keydown", handleKeyDown);
     }
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, results, selectedIndex]);
-
-  const addToRecent = (search) => {
-    const updated = [search, ...recentSearches.filter(s => s !== search)].slice(0, 5);
-    setRecentSearches(updated);
-    localStorage.setItem("recentSearches", JSON.stringify(updated));
-  };
-
-  const handleSelect = (url, title) => {
-    addToRecent(title);
-    onClose();
-    router.push(url);
-  };
+  }, [handleSelect, isOpen, onClose, results, selectedIndex]);
 
   // Helper to highlight matching text
   const HighlightText = ({ text, highlight }) => {
     if (!highlight.trim()) return <span>{text}</span>;
-    const parts = text.split(new RegExp(`(${highlight})`, "gi"));
+    const escapedHighlight = highlight.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const parts = text.split(new RegExp(`(${escapedHighlight})`, "gi"));
     return (
       <span>
         {parts.map((part, i) => 
@@ -133,21 +136,21 @@ const SearchModal = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[10vh] px-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/80 backdrop-blur-md animate-in fade-in duration-500"
+        className="absolute inset-0 bg-[#141924]/80 backdrop-blur-md animate-in fade-in duration-500"
         onClick={onClose}
       />
       
       {/* Modal Content */}
-      <div className="relative w-full max-w-2xl glass-card rounded-[3rem] border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8)] animate-in zoom-in-95 duration-500 overflow-hidden">
+      <div className="relative w-full max-w-2xl glass-card rounded-2xl sm:rounded-[3rem] border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.8)] animate-in zoom-in-95 duration-500 overflow-hidden">
         {/* Search Input Area */}
-        <div className="p-6 border-b border-white/5 flex items-center gap-4 bg-white/5">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center shadow-lg shadow-primary/10">
-            <Search className="text-primary" size={24} />
+        <div className="p-3 sm:p-6 border-b border-white/5 flex items-center gap-2 sm:gap-4 bg-white/5">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center shadow-lg shadow-primary/10">
+            <Search className="text-primary" size={20} />
           </div>
           <input
             ref={inputRef}
             type="text"
-            className="flex-1 bg-transparent border-none outline-none text-white placeholder:text-slate-600 text-2xl font-bold tracking-tight"
+            className="flex-1 min-w-0 bg-transparent border-none outline-none text-white placeholder:text-slate-600 text-base sm:text-2xl font-bold tracking-tight"
             placeholder="Search records, accounts, goals..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -158,7 +161,7 @@ const SearchModal = ({ isOpen, onClose }) => {
             </kbd>
             <button 
               onClick={onClose}
-              className="p-3 hover:bg-white/5 rounded-full transition-all text-slate-500 hover:text-white"
+              className="p-2 sm:p-3 hover:bg-white/5 rounded-full transition-all text-slate-500 hover:text-white"
             >
               <X size={24} />
             </button>
@@ -166,12 +169,12 @@ const SearchModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Results Area */}
-        <div className="max-h-[65vh] overflow-y-auto p-6 custom-scrollbar bg-[#050507]/20">
+        <div className="max-h-[65vh] overflow-y-auto p-3 sm:p-6 custom-scrollbar bg-[#1a1f2b]/20">
           {loading ? (
             <div className="py-24 flex flex-col items-center justify-center gap-6">
               <div className="relative w-16 h-16">
                 <div className="absolute inset-0 border-4 border-primary/10 rounded-full" />
-                <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(124,58,237,0.5)]" />
+                <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(212,168,67,0.5)]" />
               </div>
               <p className="text-primary font-black tracking-[0.3em] text-xs uppercase animate-pulse">Searching financial records...</p>
             </div>
@@ -199,10 +202,10 @@ const SearchModal = ({ isOpen, onClose }) => {
                           }`}
                         >
                           {active && <div className="absolute left-0 top-0 w-1 h-full bg-primary" />}
-                          <div className="flex items-center gap-5">
-                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 ${
+                          <div className="flex min-w-0 items-center gap-3 sm:gap-5">
+                            <div className={`w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 ${
                               active ? "scale-110 rotate-6 bg-primary text-white" : 
-                              item.type === 'Accounts' ? 'bg-indigo-500/20 text-indigo-400' : 
+                              item.type === 'Accounts' ? 'bg-gold-500/20 text-gold-400' : 
                               item.type === 'Income' ? 'bg-teal-500/20 text-teal-400' : 
                               item.type === 'Bills' ? 'bg-red-500/20 text-red-400' :
                               item.type === 'Goals' ? 'bg-pink-500/20 text-pink-400' :
@@ -210,11 +213,11 @@ const SearchModal = ({ isOpen, onClose }) => {
                             }`}>
                               {icons[item.icon] || <Tags size={24} />}
                             </div>
-                            <div>
-                              <h4 className={`text-base font-bold transition-colors ${active ? "text-white" : "text-slate-200"}`}>
+                            <div className="min-w-0">
+                              <h4 className={`truncate text-sm sm:text-base font-bold transition-colors ${active ? "text-white" : "text-slate-200"}`}>
                                 <HighlightText text={item.title} highlight={query} />
                               </h4>
-                              <p className="text-[11px] text-slate-500 font-medium uppercase tracking-widest mt-0.5">
+                              <p className="truncate text-[10px] sm:text-[11px] text-slate-500 font-medium uppercase tracking-wider sm:tracking-widest mt-0.5">
                                 <HighlightText text={item.subtitle} highlight={query} />
                               </p>
                             </div>
@@ -268,16 +271,16 @@ const SearchModal = ({ isOpen, onClose }) => {
                   </h3>
                   <div className="grid gap-4">
                     <div className="p-4 rounded-[1.5rem] bg-white/[0.02] border border-white/5 text-[11px] text-slate-500 font-medium leading-relaxed">
-                       Search by month (e.g. <span className="text-primary font-black">"APRIL"</span>) to filter by period.
+                       Search by month (e.g. <span className="text-primary font-black">&quot;APRIL&quot;</span>) to filter by period.
                     </div>
                     <div className="p-4 rounded-[1.5rem] bg-white/[0.02] border border-white/5 text-[11px] text-slate-500 font-medium leading-relaxed">
-                       Search amounts (e.g. <span className="text-teal-400 font-black">"5000"</span>) to find exact matches.
+                       Search amounts (e.g. <span className="text-teal-400 font-black">&quot;5000&quot;</span>) to find exact matches.
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-5">
-                  <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] flex items-center gap-2">
+                  <h3 className="text-[10px] font-black text-gold-400 uppercase tracking-[0.3em] flex items-center gap-2">
                     <RefreshCw size={14} /> Shortcuts
                   </h3>
                   <div className="grid gap-3">
@@ -300,7 +303,7 @@ const SearchModal = ({ isOpen, onClose }) => {
           )}
         </div>
         
-        <div className="p-4 bg-primary/10 text-center text-[10px] text-primary font-black uppercase tracking-[0.5em] border-t border-primary/20">
+        <div className="p-3 sm:p-4 bg-primary/10 text-center text-[9px] sm:text-[10px] text-primary font-black uppercase tracking-[0.2em] sm:tracking-[0.5em] border-t border-primary/20">
           ADVANCED SEARCH INTERFACE • MeraBudget V4.0
         </div>
       </div>

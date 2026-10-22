@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/prisma";
+import { getDbUser } from "@/lib/getDbUser";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
@@ -67,12 +68,7 @@ export async function updateDefaultAccount(accountId) {
 
 export async function getAccountWithTransactions(accountId) {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
-    const user = await db.user.findUnique({
-      where: { clerkUserid: userId },
-    });
+    const user = await getDbUser();
 
     if (!user) {
       throw new Error("User not found");
@@ -83,6 +79,7 @@ export async function getAccountWithTransactions(accountId) {
       include: {
         transactions: {
           orderBy: { date: "desc" },
+          take: 200, // Load latest 200 — the table paginates client-side anyway
         },
         _count: {
           select: { transactions: true },
@@ -116,6 +113,10 @@ export async function bulkDeleteTransactions(transactionIds) {
       throw new Error("User not found");
     }
 
+    if (!Array.isArray(transactionIds) || transactionIds.some((t) => typeof t !== "string")) {
+      throw new Error("Invalid transaction list");
+    }
+
     const transactions = await db.transaction.findMany({
       where: {
         id: { in: transactionIds },
@@ -145,7 +146,7 @@ export async function bulkDeleteTransactions(transactionIds) {
         accountBalanceChanges
       )) {
         await tx.account.update({
-          where: { id: accountId },
+          where: { id: accountId, userId: user.id },
           data: {
             balance: {
               increment: balanceChange,

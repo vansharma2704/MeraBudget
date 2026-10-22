@@ -59,7 +59,7 @@ const CreateAccountDrawer = ({ children }) => {
 
   useEffect(() => {
     if (error) {
-      toast.error(error.message || "Failed to create account");
+      toast.error(error.error || error.message || "Failed to create account");
     }
   }, [error]);
 
@@ -70,7 +70,7 @@ const CreateAccountDrawer = ({ children }) => {
   return (
     <Drawer open={open} onOpenChange={setOpen} direction="right">
       <DrawerTrigger asChild>{children}</DrawerTrigger>
-      <DrawerContent className="bg-[#0a0818]/95 border-l border-white/10 backdrop-blur-2xl text-white">
+      <DrawerContent className="bg-[#232a38]/95 border-l border-white/10 backdrop-blur-2xl text-white">
         <DrawerHeader className="border-b border-white/10 pb-6">
           <DrawerTitle className="text-2xl font-black uppercase tracking-tight text-white">
             Create New Account
@@ -105,7 +105,7 @@ const CreateAccountDrawer = ({ children }) => {
                 <SelectTrigger id="type" className="w-full h-12 bg-white/5 border-white/10 rounded-xl">
                   <SelectValue placeholder="Select Type" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0a0818] border-white/10 text-white">
+                <SelectContent className="bg-[#232a38] border-white/10 text-white">
                   <SelectItem value="CURRENT">Current</SelectItem>
                   <SelectItem value="SAVINGS">Savings</SelectItem>
                 </SelectContent>

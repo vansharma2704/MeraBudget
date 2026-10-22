@@ -84,7 +84,7 @@ export default function TaxStrategist() {
           <Progress 
             value={(taxData.section80C.total / 150000) * 100} 
             className="h-1.5"
-            indicatorClassName="bg-primary shadow-[0_0_8px_rgba(124,58,237,0.5)]"
+            indicatorClassName="bg-primary shadow-[0_0_8px_rgba(212,168,67,0.5)]"
           />
           <p className="text-[10px] text-slate-500 leading-relaxed font-medium">
             {taxData.section80C.total < 150000 

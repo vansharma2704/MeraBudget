@@ -53,7 +53,7 @@ function GoalCard({ goal, onUpdate, onDelete }) {
           </div>
           <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
             <div 
-              className="h-full bg-primary shadow-[0_0_10px_rgba(124,58,237,0.5)] transition-all duration-1000 ease-out" 
+              className="h-full bg-primary shadow-[0_0_10px_rgba(212,168,67,0.5)] transition-all duration-1000 ease-out" 
               style={{ width: `${Math.min(progress, 100)}%` }}
             />
           </div>
@@ -92,6 +92,7 @@ export default function GoalsPage() {
   const [goals, setGoals] = useState([]);
   const [name, setName] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
+  const [savedAmount, setSavedAmount] = useState("");
   const [contribution, setContribution] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -109,19 +110,31 @@ export default function GoalsPage() {
       toast.error("Please fill in Goal Name and Target Amount");
       return;
     }
+    const saved = parseFloat(savedAmount) || 0;
+    if (saved < 0) {
+      toast.error("Already saved can't be negative");
+      return;
+    }
+    if (saved > parseFloat(targetAmount)) {
+      toast.error("Already saved can't be more than the target");
+      return;
+    }
     setLoading(true);
     const result = await createGoal({
       name,
       targetAmount: parseFloat(targetAmount),
       monthlyContribution: parseFloat(contribution) || 0,
-      currentAmount: 0,
+      currentAmount: saved,
     });
     if (result.success) {
       toast.success("Goal created!");
       setName("");
       setTargetAmount("");
+      setSavedAmount("");
       setContribution("");
       fetchData();
+    } else {
+      toast.error(result.error || "Could not create goal");
     }
     setLoading(false);
   };
@@ -162,6 +175,11 @@ export default function GoalsPage() {
             <div className="space-y-1.5">
               <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Target Amount (₹)</label>
               <Input type="number" placeholder="0.00" value={targetAmount} onChange={(e) => setTargetAmount(e.target.value)} className="bg-white/5 border-white/10 text-white font-bold h-11 rounded-xl focus:ring-primary/50" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Already Saved (₹)</label>
+              <Input type="number" min="0" placeholder="0.00" value={savedAmount} onChange={(e) => setSavedAmount(e.target.value)} className="bg-white/5 border-white/10 text-white font-bold h-11 rounded-xl focus:ring-primary/50" />
+              <p className="text-[10px] text-slate-500 ml-1">How much you&apos;ve already put aside for this goal.</p>
             </div>
             <div className="space-y-1.5">
               <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Monthly Contribution (₹)</label>

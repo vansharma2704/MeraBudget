@@ -1,4 +1,6 @@
-"use server";
+// Server-only helper (NOT a server action): only Inngest jobs call this. As a server action it was
+// publicly callable and could send arbitrary email through the Resend key.
+import "server-only";
 
 import { Resend } from "resend";
 

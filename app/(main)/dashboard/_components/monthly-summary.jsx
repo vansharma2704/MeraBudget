@@ -5,19 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownRight } from "lucide-react";
 
 export default function MonthlySummary({ transactions = [] }) {
-  const currentMonth = new Date().getMonth();
-  const currentYear = new Date().getFullYear();
-
-  const monthTransactions = transactions.filter(t => {
-    const d = new Date(t.date);
-    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-  });
-
-  const income = monthTransactions
+  // Insights summarizes the complete data set supplied by the dashboard so a
+  // historical statement import is reflected in the headline figures too.
+  const income = transactions
     .filter(t => t.type === "INCOME")
     .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
 
-  const expenses = monthTransactions
+  const expenses = transactions
     .filter(t => t.type === "EXPENSE")
     .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
 
@@ -29,11 +23,11 @@ export default function MonthlySummary({ transactions = [] }) {
   ];
 
   return (
-    <Card className="h-full flex flex-col bg-[#090812] border border-white/5 rounded-xl overflow-hidden relative">
+    <Card className="h-full flex flex-col bg-[#232a38] border border-white/5 rounded-xl overflow-hidden relative">
       <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
         <div className="flex items-center gap-2 text-primary">
           <Wallet size={16} />
-          <span>Monthly Summary</span>
+          <span>Financial Summary</span>
         </div>
       </CardHeader>
       
@@ -53,7 +47,7 @@ export default function MonthlySummary({ transactions = [] }) {
           ))}
         </div>
 
-        <div className="p-5 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-[2rem] border border-blue-500/10 flex items-center justify-between relative overflow-hidden group">
+        <div className="p-5 bg-gradient-to-br from-blue-500/10 to-gold-500/10 rounded-[2rem] border border-blue-500/10 flex items-center justify-between relative overflow-hidden group">
           <div className="absolute inset-0 bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative z-10">
             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-1">Operational Surplus</p>

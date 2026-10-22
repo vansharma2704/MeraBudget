@@ -11,14 +11,15 @@ export const useFetch = (action) => {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
-  const fn = useCallback(async (params) => {
+  // Forward every argument (e.g. updateTransaction(id, data) takes two)
+  const fn = useCallback(async (...args) => {
     setLoading(true);
     setData(null);
     setError(null);
 
     try {
       // Call the server action
-      const result = await action(params);
+      const result = await action(...args);
 
       // The action can return an error object
       if (result?.error) {

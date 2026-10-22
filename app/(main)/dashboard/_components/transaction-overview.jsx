@@ -8,7 +8,7 @@ import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import React, { useState } from 'react';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
-const COLORS = ["#7C3AED", "#4F46E5", "#A78BFA", "#6366F1", "#818CF8", "#C084FC", "#2DD4BF"];
+const COLORS = ["#e9c46a", "#7dd3fc", "#f4a261", "#94a3b8", "#e07a5f", "#a3b18a", "#f4dfa3"];
 
 const DashboardOverview = ({ accounts, transactions }) => {
   const [selectedAccountId, setSelectedAccountId] = useState(
@@ -23,17 +23,12 @@ const DashboardOverview = ({ accounts, transactions }) => {
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 5);
 
-  const currentDate = new Date();
-  const currentMonthExpenses = accountTransactions.filter((t) => {
-    const transactionDate = new Date(t.date);
-    return (
-      t.type === "EXPENSE" &&
-      transactionDate.getMonth() === currentDate.getMonth() &&
-      transactionDate.getFullYear() === currentDate.getFullYear()
-    );
-  });
+  // Use the same account data as the recent-transactions panel. Restricting the
+  // chart to the current month made successfully imported historical statements
+  // disappear from the breakdown.
+  const expenses = accountTransactions.filter((t) => t.type === "EXPENSE");
 
-  const expensesByCategory = currentMonthExpenses.reduce((acc, transaction) => {
+  const expensesByCategory = expenses.reduce((acc, transaction) => {
     const category = transaction.category;
     if (!acc[category]) {
       acc[category] = 0;
@@ -51,7 +46,7 @@ const DashboardOverview = ({ accounts, transactions }) => {
 
   return (
     <div className="grid gap-8 lg:grid-cols-2">
-      <Card className="glass-card shadow-indigo-500/5 h-full flex flex-col">
+      <Card className="glass-card shadow-gold-500/5 h-full flex flex-col">
         <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
           <div className="flex items-center gap-2 text-primary">
             <span>Recent Transactions</span>
@@ -60,7 +55,7 @@ const DashboardOverview = ({ accounts, transactions }) => {
             <SelectTrigger className="w-[140px] bg-white/5 border-white/10 text-[11px] font-semibold rounded-xl h-9 hover:bg-white/10 transition-all uppercase tracking-wider text-slate-300">
               <SelectValue placeholder="Account" />
             </SelectTrigger>
-            <SelectContent className="bg-[#0a0818] border-white/10">
+            <SelectContent className="bg-[#232a38] border-white/10">
               {accounts.map((account) => (
                 <SelectItem key={account.id} value={account.id} className="text-[10px] uppercase font-bold tracking-widest text-slate-400 focus:text-white">
                   {account.name}
@@ -114,7 +109,7 @@ const DashboardOverview = ({ accounts, transactions }) => {
         </CardContent>
       </Card>
 
-      <Card className="glass-card shadow-purple-500/5 h-full flex flex-col">
+      <Card className="glass-card shadow-gold-500/5 h-full flex flex-col">
         <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
           <div className="flex items-center gap-2 text-primary">
             <span>Expense Breakdown</span>
@@ -143,14 +138,14 @@ const DashboardOverview = ({ accounts, transactions }) => {
                       <Cell 
                         key={`cell-${index}`} 
                         fill={COLORS[index % COLORS.length]} 
-                        className="drop-shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all duration-500"
+                        className="drop-shadow-[0_0_15px_rgba(212,168,67,0.3)] transition-all duration-500"
                       />
                     ))}
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "rgba(5, 5, 7, 0.95)",
-                      border: "1px solid rgba(124, 58, 237, 0.2)",
+                      backgroundColor: "rgba(26, 31, 43, 0.95)",
+                      border: "1px solid rgba(212, 168, 67, 0.2)",
                       borderRadius: "16px",
                       backdropFilter: "blur(8px)",
                       boxShadow: "0 10px 30px rgba(0,0,0,0.5)",

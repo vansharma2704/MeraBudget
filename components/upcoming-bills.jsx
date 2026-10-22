@@ -20,7 +20,7 @@ export default function UpcomingBills() {
   }, []);
 
   return (
-    <Card className="glass-card shadow-indigo-500/10 h-full flex flex-col">
+    <Card className="glass-card shadow-gold-500/10 h-full flex flex-col">
       <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
         <div className="flex items-center gap-2 text-primary">
           <CalendarClock size={16} />

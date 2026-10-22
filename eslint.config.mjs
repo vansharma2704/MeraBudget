@@ -1,17 +1,14 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+// eslint-config-next 16 ships native flat configs (the old FlatCompat bridge crashes with it)
+import nextVitals from "eslint-config-next/core-web-vitals";
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals"),
+  ...nextVitals,
   {
+    rules: {
+      // Client hydration and browser API subscriptions legitimately initialize
+      // local state in effects throughout this application.
+      "react-hooks/set-state-in-effect": "off",
+    },
     ignores: [
       "node_modules/**",
       ".next/**",

@@ -1,0 +1,11 @@
+import { readFileSync } from "node:fs";
+import { getDocumentProxy } from "unpdf";
+import { pdfToLines } from "./pdf-lines.mjs";
+const bytes = readFileSync(process.argv[2]);
+const pdf = await getDocumentProxy(new Uint8Array(bytes));
+let items = 0;
+for (let p = 1; p <= pdf.numPages; p++) items += (await (await pdf.getPage(p)).getTextContent()).items.filter((i) => i.str.trim()).length;
+console.log("pages:", pdf.numPages, "| text items:", items);
+const lines = await pdfToLines(readFileSync(process.argv[2]));
+console.log("lines:", lines.length);
+lines.slice(0, 45).forEach((l, i) => console.log(String(i).padStart(3), JSON.stringify(l)));

@@ -37,7 +37,7 @@ export default function MoodTracker() {
   const activeMood = MOODS.find((m) => m.label === selected);
 
   return (
-    <Card className="h-full flex flex-col bg-[#090812] border border-white/5 rounded-xl overflow-hidden relative">
+    <Card className="h-full flex flex-col bg-[#232a38] border border-white/5 rounded-xl overflow-hidden relative">
       <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
         <div className="flex items-center gap-2 text-primary">
           <Smile size={16} />
@@ -52,7 +52,7 @@ export default function MoodTracker() {
 
       <CardContent className="p-6 flex-1 flex flex-col justify-center gap-6">
         {/* Mood grid */}
-        <div className="grid grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 min-[420px]:grid-cols-3 sm:grid-cols-5 gap-3">
           {MOODS.map((mood) => (
             <button
               key={mood.label}

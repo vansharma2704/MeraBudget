@@ -23,9 +23,22 @@ export async function createSubscription(data) {
 
     if (!user) throw new Error("User not found");
 
+    const name = String(data?.name || "").trim();
+    const amount = Number(data?.amount);
+    const nextBilling = new Date(data?.nextBilling);
+    const frequency = data?.frequency || "MONTHLY";
+    if (!name) throw new Error("Subscription name is required");
+    if (!(amount > 0)) throw new Error("Amount must be more than 0");
+    if (Number.isNaN(nextBilling.getTime())) throw new Error("Invalid billing date");
+    if (!["DAILY", "WEEKLY", "MONTHLY", "YEARLY"].includes(frequency)) throw new Error("Invalid frequency");
+
     const subscription = await db.subscription.create({
       data: {
-        ...data,
+        name,
+        amount,
+        nextBilling,
+        frequency,
+        category: data?.category ? String(data.category) : null,
         userId: user.id,
       },
     });
@@ -67,9 +80,11 @@ export async function deleteSubscription(id) {
     const { userId: clerkUserId } = await auth();
     if (!clerkUserId) throw new Error("Unauthorized");
 
-    await db.subscription.delete({
-      where: { id },
+    // Only the owner's subscription can be deleted
+    const { count } = await db.subscription.deleteMany({
+      where: { id, user: { clerkUserid: clerkUserId } },
     });
+    if (count === 0) throw new Error("Subscription not found");
 
     revalidatePath("/dashboard");
     revalidatePath("/subscriptions");

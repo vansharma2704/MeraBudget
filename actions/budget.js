@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/prisma";
+import { getDbUser } from "@/lib/getDbUser";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
@@ -13,32 +14,35 @@ const serializeBudget = (budget) => ({
 
 export async function getCurrentBudget(accountId) {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
-    const user = await db.user.findUnique({
-      where: { clerkUserid: userId },
-    });
+    const user = await getDbUser();
 
     if (!user) {
       throw new Error("User not found");
     }
 
-    const budget = await db.budget.findFirst({
-      where: {
-        userID: user.id,
-      },
-    });
+    // Scope expenses to the current calendar month — it's a monthly budget tracker,
+    // and scanning all-time transactions is unnecessarily slow as the DB grows.
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
 
-    const expenses = await db.transaction.aggregate({
-      where: {
-        userId: user.id,
-        type: "EXPENSE",
-      },
-      _sum: {
-        amount: true,
-      }
-    });
+    const [budget, expenses] = await Promise.all([
+      db.budget.findFirst({
+        where: {
+          userID: user.id,
+        },
+      }),
+      db.transaction.aggregate({
+        where: {
+          userId: user.id,
+          type: "EXPENSE",
+          date: { gte: startOfMonth, lte: endOfMonth },
+        },
+        _sum: {
+          amount: true,
+        }
+      }),
+    ]);
 
     return {
       budget: budget ? serializeBudget(budget) : null,
@@ -64,16 +68,19 @@ export async function updateBudget(amount) {
       throw new Error("User not found");
     }
 
+    const value = Number(amount);
+    if (!(value > 0)) throw new Error("Budget must be more than 0");
+
     const budget = await db.budget.upsert({
       where: {
         userID: user.id,
       },
       update: {
-        amount,
+        amount: value,
       },
       create: {
         userID: user.id,
-        amount,
+        amount: value,
       },
     });
 

@@ -89,13 +89,13 @@ export default function Geofencing() {
   }, [isActive, currentZone?.name]);
 
   return (
-    <Card className="glass-card shadow-indigo-500/10 h-full flex flex-col border-purple-500/10">
+    <Card className="glass-card shadow-gold-500/10 h-full flex flex-col border-gold-500/10">
       <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
         <div className="flex items-center gap-2 text-primary">
           <MapPin size={16} />
           <span>Live Geofencing</span>
         </div>
-        <Badge variant={isActive ? "default" : "secondary"} className={`text-[9px] font-black tracking-tighter ${isActive ? "bg-primary shadow-[0_0_10px_rgba(124,58,237,0.5)]" : "bg-white/10"}`}>
+        <Badge variant={isActive ? "default" : "secondary"} className={`text-[9px] font-black tracking-tighter ${isActive ? "bg-primary shadow-[0_0_10px_rgba(212,168,67,0.5)]" : "bg-white/10"}`}>
           {isActive ? "LIVE TRACKING" : "INACTIVE"}
         </Badge>
       </CardHeader>
@@ -149,7 +149,7 @@ export default function Geofencing() {
         </AnimatePresence>
 
         {!isActive && (
-          <div className="p-4 rounded-2xl border border-dashed border-white/5 bg-black/20 text-center">
+          <div className="p-4 rounded-2xl border border-dashed border-white/5 bg-[#141924]/20 text-center">
             <p className="text-[10px] text-slate-600 font-medium italic">
               Enable GPS to track your location against custom budget zones.
             </p>

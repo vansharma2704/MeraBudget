@@ -119,30 +119,30 @@ const FinancialHeatmap = ({ transactions = [], compact = false }) => {
   };
 
   return (
-    <Card className="h-full flex flex-col bg-[#090812] border border-white/5 rounded-xl overflow-hidden relative">
-      <CardHeader className="h-16 flex items-center justify-between px-6 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
+    <Card className="h-full flex flex-col bg-[#232a38] border border-white/5 rounded-xl overflow-hidden relative">
+      <CardHeader className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 sm:px-6 py-4 border-b border-white/5 uppercase tracking-widest text-xs font-bold space-y-0">
         <div className="flex items-center gap-2 text-primary">
           <CalendarIcon size={16} />
           <span>Transaction Activity</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 ml-auto">
           <button onClick={prevMonth} className="p-1 px-3 rounded-full bg-white/5 hover:bg-primary/20 border border-white/10 transition-all text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-white">Back</button>
-          <span className="font-black text-[10px] uppercase tracking-widest text-white min-w-[100px] text-center">{format(currentDate, 'MMMM yyyy')}</span>
+          <span className="font-black text-[10px] uppercase tracking-widest text-white min-w-[96px] text-center whitespace-nowrap">{format(currentDate, 'MMMM yyyy')}</span>
           <button onClick={nextMonth} className="p-1 px-3 rounded-full bg-white/5 hover:bg-primary/20 border border-white/10 transition-all text-[9px] font-black uppercase tracking-widest text-slate-400 hover:text-white">Next</button>
         </div>
       </CardHeader>
 
-      <CardContent className="p-6 flex-1">
-        <div className="grid grid-cols-7 gap-2 mb-3">
+      <CardContent className="p-3 sm:p-6 flex-1">
+        <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-3">
           {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day, i) => (
-            <div key={`${day}-${i}`} className="text-center text-[9px] font-black text-slate-600 uppercase tracking-[0.2em]">
+            <div key={`${day}-${i}`} className="text-center text-[9px] font-black text-slate-600 uppercase tracking-normal sm:tracking-[0.2em]">
               {day}
             </div>
           ))}
         </div>
 
         <TooltipProvider delayDuration={100}>
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2">
             {/* Empty slots for start of month */}
             {Array.from({ length: daysInMonth[0].getDay() }).map((_, i) => (
               <div key={`empty-${i}`} className="aspect-square rounded-xl bg-transparent" />
@@ -163,7 +163,7 @@ const FinancialHeatmap = ({ transactions = [], compact = false }) => {
                       className={cn(
                         "aspect-square rounded-2xl border flex flex-col items-center justify-center cursor-pointer transition-all duration-300 relative group",
                         getColorClass(date),
-                        isSameDay(date, new Date()) ? 'ring-2 ring-primary ring-offset-2 ring-offset-[#050507]' : '',
+                        isSameDay(date, new Date()) ? 'ring-2 ring-primary ring-offset-2 ring-offset-[#1a1f2b]' : '',
                         isSelected ? 'scale-110 z-10' : 'hover:scale-105'
                       )}
                     >
@@ -176,7 +176,7 @@ const FinancialHeatmap = ({ transactions = [], compact = false }) => {
                       )}
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-[#0a0818] border-white/10 p-4 shadow-2xl backdrop-blur-xl">
+                  <TooltipContent side="top" className="bg-[#232a38] border-white/10 p-4 shadow-2xl backdrop-blur-xl">
                     <div className="space-y-3 min-w-[150px]">
                       <h4 className="font-black text-[10px] border-b border-white/10 pb-2 text-primary uppercase tracking-widest">{format(date, 'MMMM d, yyyy')}</h4>
                       {hasData ? (
@@ -206,7 +206,7 @@ const FinancialHeatmap = ({ transactions = [], compact = false }) => {
         </TooltipProvider>
 
         {/* Legend */}
-        <div className="mt-8 pt-6 border-t border-white/5 flex flex-wrap items-center justify-center gap-6">
+        <div className="mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-white/5 flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-lg bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
             <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Low</span>

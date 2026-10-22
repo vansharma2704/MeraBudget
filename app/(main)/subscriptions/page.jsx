@@ -59,7 +59,7 @@ export default function SubscriptionsPage() {
           <h1 className="text-4xl font-black uppercase tracking-tight text-white">Subscriptions</h1>
           <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Manage your recurring subscriptions and services.</p>
         </div>
-        <Card className="glass-card border-primary/30 p-6 px-10 shadow-primary/10">
+        <Card className="glass-card border-primary/30 p-4 sm:p-6 sm:px-10 shadow-primary/10">
           <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-1">TOTAL MONTHLY SPEND</div>
           <div className="text-3xl font-black text-white">₹{totalMonthly.toLocaleString()}</div>
         </Card>

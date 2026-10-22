@@ -1,4 +1,5 @@
-"use server";
+// Dev-only seeding helper (NOT a server action, so browsers can't call it).
+import "server-only";
 
 import { db } from "@/lib/prisma";
 import { subDays } from "date-fns";
@@ -44,6 +45,9 @@ function getRandomCategory(type) {
 }
 
 export async function seedTransactions() {
+  if (process.env.NODE_ENV === "production") {
+    return { success: false, error: "Seeding is disabled in production" };
+  }
   try {
     // Generate 90 days of transactions
     const transactions = [];

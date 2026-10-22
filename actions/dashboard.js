@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import {db} from "@/lib/prisma";
+import { getDbUser } from "@/lib/getDbUser";
 import { auth } from "@clerk/nextjs/server";
 
 const serializeTransaction =(obj) => {
@@ -49,12 +50,18 @@ export async function CreateAccount(data){
  });
  }
 
+ const name = String(data?.name || "").trim();
+ if (!name) throw new Error("Account name is required");
+ if (!["CURRENT", "SAVINGS"].includes(data?.type)) throw new Error("Invalid account type");
+
+ // Only accept known fields — never spread client input into create (nested writes, ids, etc.)
  const account = await db.account.create({
  data:{
- ...data,
+ name,
+ type: data.type,
  balance:balanceFloat,
  userId: user.id,
- isDefault: shouldBeDefault,
+ isDefault: Boolean(shouldBeDefault),
 },
  });
 
@@ -69,12 +76,7 @@ return { success: true, data: serializedAccount};
 
 export async function getUserAccounts() {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
-    const user = await db.user.findUnique({
-      where: { clerkUserid: userId },
-    });
+    const user = await getDbUser();
 
     if (!user) {
       return []; // Return empty if user not found instead of crashing
@@ -173,12 +175,7 @@ export async function deleteAccount(id) {
 
 export async function getDashboardData(dateFilter = null) {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
-    const user = await db.user.findUnique({
-      where: { clerkUserid: userId },
-    });
+    const user = await getDbUser();
 
     if (!user) {
       return [];
@@ -200,7 +197,10 @@ export async function getDashboardData(dateFilter = null) {
 
     const transactions = await db.transaction.findMany({
       where: whereClause,
-      orderBy: { date: "desc" }
+      orderBy: { date: "desc" },
+      // Keep the dashboard bounded, but do not use an age cut-off. Imported bank
+      // statements are commonly older than 90 days and must still be visible.
+      take: 500,
     });
 
     return transactions.map(serializeTransaction);

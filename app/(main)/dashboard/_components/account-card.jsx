@@ -62,7 +62,7 @@ export default function AccountCard({ account }) {
   }, [deletedAccount, deleteError]);
 
   return (
-    <Card className="h-full flex flex-col bg-[#090812] border border-white/5 rounded-xl overflow-hidden relative group">
+    <Card className="h-full flex flex-col bg-[#232a38] border border-white/5 rounded-xl overflow-hidden relative group">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
       <Link href={`/account/${id}`} className="flex flex-col flex-grow z-10">
